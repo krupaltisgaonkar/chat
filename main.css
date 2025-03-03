@@ -1,0 +1,304 @@
+* {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    scroll-behavior: smooth;
+    transition: 0.3s all;
+}
+
+#background {
+    background: linear-gradient(to bottom right, #7d0000, #00607a); /* Example: red to blue gradient from top to bottom */
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    z-index: -100000000000000000000000000000000000000000000000000000000000000000000;
+    top: 0;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+#chatBox {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 5px solid rgb(0, 95, 147);
+    border-radius: 30px;
+    width: 100%;
+    height: 50vh;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    font-size: larger;
+    overflow-y: scroll;
+    overflow-wrap:break-word;
+}
+
+#right {
+    width: 50%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: 10px;
+}
+
+#left {
+    width: 30%;
+    height: 10vh;
+    background-color: rgba(0, 0, 0, 0.326);
+    border-radius: 30px;
+    color: white;
+    text-align: center;
+}
+
+#people {
+    color: white;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#thingy {
+    position: relative;
+    top: 0;
+}
+
+#people ul {
+    list-style-type: disc;
+    margin-left: -30px;
+}
+
+#people ul li::marker {
+    color: rgb(0, 255, 0);
+    font-size: 20px;
+}
+
+#chatBox .profile-pic {
+    border-radius: 50%;
+    position: relative;
+    width: 30px;
+}
+
+#chatBox::-webkit-scrollbar-thumb {
+    background-color: rgb(255, 136, 0);
+    border: 4px solid transparent;
+    border-radius: 8px;
+    background-clip: padding-box;  
+}
+#chatBox::-webkit-scrollbar {
+    width: 14px;
+}
+
+#message-container {
+    border: 3px rgb(255, 0, 0) solid;
+    width: 100%;
+    height: 30px;
+    border-radius: 30px;
+    margin-top: 10px;
+    padding: 10px;
+    outline: none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    background-color: rgba(16, 16, 16, 0.5);
+}
+
+#message-container .container {
+    width: 30%;
+    justify-content: space-evenly;
+    height: max-content;
+    display: flex;
+}
+
+#message {
+    width: 100%;
+    height: 27px;
+    border: none;
+    outline: none;
+    background: none;
+    color: white;
+    font-size: larger;
+}
+
+#message::placeholder {
+    color: rgb(121, 121, 121);
+}
+
+#enter {
+    font-size: larger;
+    background:transparent;
+    color: white;
+    outline: none;
+    border: none;
+    cursor:pointer;
+}
+
+.date {
+    color:rgb(108, 108, 108);
+}
+
+#chatArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3vh;
+}
+
+
+
+.message {
+    color: white;
+    font-size: 20px;
+    line-height: 30px;
+}
+
+#upload {
+    margin-top: 30px;
+    cursor: pointer;
+    color: white;
+}
+
+#navbar ul {
+    list-style: none;
+    display: flex;
+}
+
+#navbar ul li{
+    margin: 10px;
+    cursor: pointer;
+    padding: 3px;
+}
+
+#open {
+    cursor: pointer;
+    background:none;
+    outline: none;
+    border: none;
+    color: white;
+    display: none;
+}
+
+.chatPicture {
+    width: 40%;
+    height: max-content;
+    cursor:-webkit-zoom-in;
+}
+#tip {
+    position: absolute;
+    top: 0;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+#rooms {
+    background-color: black;
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    z-index: 10000000000000000;
+    top: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+#rooms #joinRoom {
+    width: 100%;
+    justify-content:center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    translate: 35%;
+}
+
+#rooms button{
+    border-radius: 50px;
+    width: 30%;
+    height: 9vh;
+    outline: none;
+    border: #e64545 3px solid;
+    cursor: pointer;
+    background-color: #404040;
+    color: white;
+    font-size: 1.5rem;
+}
+#rooms button:hover{
+    background-color: #e64545;
+    border: #00607a;
+    color: black;
+}
+
+#rooms #joinRoom button {
+    margin-top: 30px;
+}
+
+#wow {
+    width: 15%;
+    height: 5vh;
+    font-size: 0.5rem;
+}
+
+#rooms input {
+    background-color: #003f4e;
+    width: 28%;
+    height: 6vh;
+    font-size: 1.2rem;
+    outline: none;
+    border: #d88900 3px solid;
+    border-radius: 50px;
+    padding: 10px;
+    color: white;
+}
+
+#online {
+    color: #00ff00;
+}
+
+#login {
+    width: 100%;
+    height: 100vh;
+    background-color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000000000000000000000000000000000;
+}
+
+
+
+
+
+@media only screen and (max-width: 560px) {
+    #chatArea {
+      flex-direction: column;
+    }
+    #right {
+        width: 80%;
+    }
+    #left {
+        width: 80%;
+    }
+  }
+  @media only screen and (max-width: 350px) {
+    #navbar ul{
+      flex-direction: column;
+    }
+    #navbar {
+        justify-content: none;
+        align-items: end;
+        display: block;
+        flex-direction: column;
+        background-color: black;
+    }
+
+    #navbar #open{
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        display: block;
+    }
+  }
