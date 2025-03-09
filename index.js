@@ -21,6 +21,7 @@ let settings = JSON.parse(localStorage.getItem("settings"))
 function setup(){
     const previousHTML = document.body.innerHTML
     document.getElementById("chatArea").style.visibility = "hidden"
+    document.getElementById("my-rooms").style.display = "none"
     document.getElementById("rooms").style.display = "none"
     document.getElementById("login").innerHTML = `
         <div id="sign-in">
@@ -50,6 +51,7 @@ function setup(){
         localStorage.setItem("settings", JSON.stringify(userSettings))
         document.getElementById("login").style.display = "none"
         document.getElementById("rooms").style.display = "flex"
+        document.getElementById("my-rooms").style.display = "block"
         document.getElementById("chatArea").style.visibility = "hidden"
         window.location.reload()
     }
@@ -99,7 +101,6 @@ function whichOne(id, main, part){
     else {
         location = ref(db, `chat/${id}/content`)
     }
-    console.log(location)
     onValue(location, (snapshot) => {
         const val = snapshot.val()
         if (val == null){
@@ -191,7 +192,6 @@ joinButton.addEventListener("click", () => {
             }
             onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                 const value = snapshot.val()
-                console.log(value, "fal")
                 if (value == null){
                     set(ref(db, `users/${settings.uid}/rooms/0`), document.getElementById("roomid").value)
                 } else {
@@ -206,7 +206,6 @@ joinButton.addEventListener("click", () => {
                     }
                     if (foundroom){
                         set(ref(db, `users/${settings.uid}/rooms/${valueKeys.length}`), randomCode)
-                        console.log("going")
                     }
                 }
             }, {onlyOnce: true})
@@ -248,6 +247,12 @@ const createRoom = document.getElementById("createroom")
 createRoom.addEventListener("click", () => {
     randomCode = generateRandomCode(4)
     document.getElementById("online").textContent = randomCode
+    let stuff
+    const getRooms = onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
+        const val = snapshot.val()
+        stuff =  Object.keys(val).length
+    }, {onlyOnce: true})
+    set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
     whichOne(randomCode, false, "")
     //console.log("click")
 })
@@ -356,9 +361,11 @@ school.addEventListener("click", () => {
 window.setInterval(function(){
     if (randomCode == "main"){
         isOnMain = true
+        document.getElementById("navbar").style.display = "flex"
         document.getElementById("online").textContent = `main/${partofmain}`
     } else {
         isOnMain = false
+        document.getElementById("navbar").style.display = "none"
         document.getElementById("online").textContent = randomCode
     }
 })
