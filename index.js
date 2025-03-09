@@ -1,1 +1,395 @@
-const _0x2a60fc=_0x5de4;(function(_0x9a9d43,_0x1fb901){const _0x5b5f19=_0x5de4,_0x2dfa48=_0x9a9d43();while(!![]){try{const _0xfe7e0d=parseInt(_0x5b5f19(0x109))/0x1*(-parseInt(_0x5b5f19(0xe6))/0x2)+-parseInt(_0x5b5f19(0x100))/0x3*(-parseInt(_0x5b5f19(0x114))/0x4)+-parseInt(_0x5b5f19(0xf8))/0x5*(-parseInt(_0x5b5f19(0xbb))/0x6)+-parseInt(_0x5b5f19(0x10e))/0x7+parseInt(_0x5b5f19(0x11e))/0x8*(parseInt(_0x5b5f19(0xdf))/0x9)+-parseInt(_0x5b5f19(0xdd))/0xa+-parseInt(_0x5b5f19(0x10b))/0xb;if(_0xfe7e0d===_0x1fb901)break;else _0x2dfa48['push'](_0x2dfa48['shift']());}catch(_0xf055ea){_0x2dfa48['push'](_0x2dfa48['shift']());}}}(_0x2426,0x3f2f3));import{initializeApp}from'https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js';import{getDatabase,ref,set,onValue,get,off,child}from'https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js';function _0x5de4(_0x510031,_0x13a47b){const _0x24265f=_0x2426();return _0x5de4=function(_0x5de4ff,_0x532b56){_0x5de4ff=_0x5de4ff-0xbb;let _0xc1dc72=_0x24265f[_0x5de4ff];return _0xc1dc72;},_0x5de4(_0x510031,_0x13a47b);}function _0x2426(){const _0x4e3f34=['275kDcwyB','textContent','displayName','ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789','https://lh3.googleusercontent.com/ogw/AF2bZyj2dHMsDhnJ8g2qKbGUkFnXYcR6lH-VE-S1pR__gh3UTxY=s64-c-mo','span','parse','flex','1215auyhlO','getItem','login','online','https://www.pngkey.com/png/full/263-2635979_admin-abuse.png','toLocaleTimeString','Enter','en-US','\x20not\x20found','2UbiUcm','enter','8698822gvLSly','appendChild','charAt','876610rIVpsH','true','/content/','body','click','numeric','4636IzpMwh','addEventListener','change','signin','length','block','location','chat/','preventDefault','setItem','4098104yLjsIZ','onloadend','setCustomParameters','Admin','keys','innerHTML','41988UDVwrH','AIzaSyDw-7aUpZN0S5CzBOp1Q31xhiIO15J6qD8','chat-ee5e6.firebaseapp.com','rooms\x20will\x20be\x20deleted\x20everyday','mathActivitiesprofilePic','\x20at\x20','value','join','9734116155','div','val','getElementById','email','add','referrerPolicy','admin','G-QM8FR4B1N0','classList','reload','profile-pic','floor','message','profilePic','chat-ee5e6.firebasestorage.app','\x22\x20class\x20=\x20\x22chatPicture\x22>','img','createroom','style','scrollHeight','key','chat-ee5e6','Room\x20','hidden','chatArea','1402050UytCWe','roomid','9mvhCQp','/content','which\x20one?','createElement','display','keydown','krupalt78@gmail.com','51508nuIXai','chatBox','stringify','visible','none','visibility','school','uid','<img\x20src\x20=\x20\x22','date','rooms','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22sign-in\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20id\x20=\x20\x22signin\x22>Sign\x20in\x20with\x20google</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','user','src','prompt','scrollTop','width','1:9734116155:web:2ce1f27d7485eab6ff1d1e'];_0x2426=function(){return _0x4e3f34;};return _0x2426();}import{getAuth,GoogleAuthProvider,signInWithPopup,getAdditionalUserInfo}from'https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js';const firebaseConfig={'apiKey':_0x2a60fc(0xbc),'authDomain':_0x2a60fc(0xbd),'projectId':_0x2a60fc(0xd9),'storageBucket':_0x2a60fc(0xd2),'messagingSenderId':_0x2a60fc(0xc3),'appId':_0x2a60fc(0xf7),'measurementId':_0x2a60fc(0xcb)};let start;const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);let settings=JSON[_0x2a60fc(0xfe)](localStorage[_0x2a60fc(0x101)]('settings'));function setup(){const _0x69c7eb=_0x2a60fc,_0x309495=document[_0x69c7eb(0x111)][_0x69c7eb(0x123)];document[_0x69c7eb(0xc6)](_0x69c7eb(0xdc))['style'][_0x69c7eb(0xeb)]=_0x69c7eb(0xdb),document['getElementById'](_0x69c7eb(0xf0))[_0x69c7eb(0xd6)][_0x69c7eb(0xe3)]='none',document[_0x69c7eb(0xc6)]('login')[_0x69c7eb(0x123)]=_0x69c7eb(0xf1);const _0x5c6309=document[_0x69c7eb(0xc6)](_0x69c7eb(0x117));async function _0x44365b(){const _0x47b345=_0x69c7eb,_0x2f8438=new GoogleAuthProvider();_0x2f8438[_0x47b345(0x120)]({'prompt':'select_account'});const _0x156d93=await signInWithPopup(auth,_0x2f8438),_0x13436e=_0x156d93[_0x47b345(0xf2)];_0x13436e[_0x47b345(0xc7)]==_0x47b345(0xe5)&&localStorage['setItem'](_0x47b345(0xca),!![]);const _0xc44011={'profilePic':_0x13436e['photoURL'],'displayName':_0x13436e[_0x47b345(0xfa)],'uid':_0x13436e[_0x47b345(0xed)]};settings={},settings[_0x47b345(0xd1)]=_0xc44011[_0x47b345(0xd1)],settings[_0x47b345(0xfa)]=_0xc44011[_0x47b345(0xfa)],localStorage[_0x47b345(0x11d)]('settings',JSON[_0x47b345(0xe8)](_0xc44011)),document[_0x47b345(0xc6)](_0x47b345(0x102))[_0x47b345(0xd6)][_0x47b345(0xe3)]='none',document[_0x47b345(0xc6)](_0x47b345(0xf0))[_0x47b345(0xd6)][_0x47b345(0xe3)]=_0x47b345(0xff),document[_0x47b345(0xc6)](_0x47b345(0xdc))[_0x47b345(0xd6)][_0x47b345(0xeb)]=_0x47b345(0xdb),window[_0x47b345(0x11a)][_0x47b345(0xcd)]();}_0x5c6309[_0x69c7eb(0x115)](_0x69c7eb(0x112),_0x44365b);}try{Object['keys'](settings);}catch{setup();}let index=0x0;window[_0x2a60fc(0x115)](_0x2a60fc(0xe4),_0x13be06=>{const _0x21f5c7=_0x2a60fc;if(_0x13be06[_0x21f5c7(0xd8)]=='E'){_0x13be06[_0x21f5c7(0x11c)]();if(localStorage['getItem'](_0x21f5c7(0xca))==_0x21f5c7(0x10f)){const _0x4f0702=window[_0x21f5c7(0xf4)](_0x21f5c7(0xe1));if(_0x4f0702==_0x21f5c7(0xec))settings[_0x21f5c7(0xbf)]=_0x21f5c7(0xfc);else _0x4f0702==_0x21f5c7(0xca)&&(settings[_0x21f5c7(0xd1)]=_0x21f5c7(0x104),settings[_0x21f5c7(0xfa)]=_0x21f5c7(0x121));}}});function whichOne(_0x329e07){const _0x332455=_0x2a60fc;onValue(ref(db,'chat/'+_0x329e07+_0x332455(0xe0)),_0x54f39=>{const _0xd909c8=_0x332455,_0xd05551=_0x54f39['val']();if(_0xd05551==null)return set(ref(db,'chat/'+_0x329e07+'/content'),''),![];const _0x2ecb0f=document[_0xd909c8(0xc6)](_0xd909c8(0xe7));if(_0xd05551==null)_0x2ecb0f[_0xd909c8(0x123)]='',index=0x0;else{index=Object['keys'](_0xd05551)[_0xd909c8(0x118)],_0x2ecb0f[_0xd909c8(0x123)]='';for(let _0x2bf573=0x0;_0x2bf573<Object[_0xd909c8(0x122)](_0xd05551)['length'];_0x2bf573++){const _0x2f1a98=_0xd05551[_0x2bf573],_0x389e90=document[_0xd909c8(0xe2)](_0xd909c8(0xc4));_0x389e90[_0xd909c8(0xcc)]['add'](_0xd909c8(0xd0));const _0x1ab0a3=document[_0xd909c8(0xe2)](_0xd909c8(0xd4));_0x1ab0a3[_0xd909c8(0xf3)]=_0x2f1a98[0x2],_0x1ab0a3['classList'][_0xd909c8(0xc8)](_0xd909c8(0xce)),_0x1ab0a3[_0xd909c8(0xf6)]='30px',_0x1ab0a3['alt']='pic',_0x1ab0a3[_0xd909c8(0xc9)]='no-referrer';const _0x6d5dd5=document[_0xd909c8(0xe2)](_0xd909c8(0xfd));_0x6d5dd5[_0xd909c8(0x123)]=_0x2f1a98[0x3];const _0xfc4d21=document[_0xd909c8(0xe2)](_0xd909c8(0xc4));_0xfc4d21['textContent']=_0x2f1a98[0x1],_0xfc4d21['classList']['add'](_0xd909c8(0xef));const _0x145a3b=document[_0xd909c8(0xe2)](_0xd909c8(0xc4));if(_0x2f1a98[0x4]==!![])_0x145a3b[_0xd909c8(0x123)]=_0x2f1a98[0x0];else _0x2f1a98[0x4]==![]&&(_0x145a3b['textContent']=_0x2f1a98[0x0]);_0x2ecb0f['appendChild'](_0x389e90),_0x389e90[_0xd909c8(0x10c)](_0x1ab0a3),_0x389e90[_0xd909c8(0x10c)](_0x6d5dd5),_0x389e90[_0xd909c8(0x10c)](_0xfc4d21),_0x389e90[_0xd909c8(0x10c)](_0x145a3b);}_0x2ecb0f[_0xd909c8(0xf5)]=_0x2ecb0f[_0xd909c8(0xd7)],document[_0xd909c8(0xc6)](_0xd909c8(0x102))[_0xd909c8(0xd6)][_0xd909c8(0xe3)]='none',document['getElementById'](_0xd909c8(0xf0))[_0xd909c8(0xd6)][_0xd909c8(0xe3)]=_0xd909c8(0xea),document[_0xd909c8(0xc6)]('chatArea')['style'][_0xd909c8(0xeb)]=_0xd909c8(0xe9);}});}const joinArea=document[_0x2a60fc(0xc6)]('joinRoom');joinArea[_0x2a60fc(0xd6)][_0x2a60fc(0xe3)]=_0x2a60fc(0xea);const joinRoom=document[_0x2a60fc(0xc6)](_0x2a60fc(0xc2)),joinButton=document[_0x2a60fc(0xc6)]('joinbutton');let randomCode=document['getElementById']('roomid')[_0x2a60fc(0xc1)];joinRoom['addEventListener'](_0x2a60fc(0x112),()=>{const _0x50b446=_0x2a60fc;document[_0x50b446(0xc6)](_0x50b446(0xd5))[_0x50b446(0xd6)][_0x50b446(0xe3)]=_0x50b446(0xea),document['getElementById']('online')[_0x50b446(0xf9)]=randomCode,joinRoom['style'][_0x50b446(0xe3)]=_0x50b446(0xea),joinArea[_0x50b446(0xd6)]['display']='block';}),joinButton[_0x2a60fc(0x115)](_0x2a60fc(0x112),()=>{const _0x59f842=_0x2a60fc;onValue(ref(db,_0x59f842(0x11b)),_0x355a82=>{const _0x26896b=_0x59f842,_0x119858=_0x355a82[_0x26896b(0xc5)](),_0x5e2c3e=Object[_0x26896b(0x122)](_0x119858);let _0x2db853=![];for(var _0x15ef5f=0x0;_0x15ef5f<_0x5e2c3e[_0x26896b(0x118)];_0x15ef5f++){randomCode=document[_0x26896b(0xc6)](_0x26896b(0xde))[_0x26896b(0xc1)],randomCode==_0x5e2c3e[_0x15ef5f]&&(_0x2db853=!![]);}_0x2db853?(document[_0x26896b(0xc6)](_0x26896b(0xf0))[_0x26896b(0xd6)][_0x26896b(0xe3)]=_0x26896b(0xea),document[_0x26896b(0xc6)](_0x26896b(0x103))[_0x26896b(0xf9)]=randomCode,whichOne(randomCode)):alert(_0x26896b(0xda)+randomCode+_0x26896b(0x108));},{'onlyOnce':!![]});});function back(){const _0x4f6f46=_0x2a60fc;document[_0x4f6f46(0xc6)]('createroom')['style']['display']=_0x4f6f46(0x119),joinRoom[_0x4f6f46(0xd6)]['display']=_0x4f6f46(0x119),joinArea[_0x4f6f46(0xd6)]['display']=_0x4f6f46(0xea);}document['getElementById']('wow')[_0x2a60fc(0x115)]('click',back);function getRandomInteger(_0x34f012,_0x4576e1){const _0x3c3df2=_0x2a60fc;return Math[_0x3c3df2(0xcf)](Math['random']()*(_0x4576e1-_0x34f012+0x1))+_0x34f012;}function generateRandomCode(_0x4c60cc){const _0x832198=_0x2a60fc,_0x4838de=_0x832198(0xfb);let _0x1dcdee='';for(let _0x4221dd=0x0;_0x4221dd<_0x4c60cc;_0x4221dd++){const _0x25d85d=getRandomInteger(0x0,_0x4838de[_0x832198(0x118)]-0x1);_0x1dcdee+=_0x4838de[_0x832198(0x10d)](_0x25d85d);}return _0x1dcdee;}const createRoom=document[_0x2a60fc(0xc6)](_0x2a60fc(0xd5));createRoom[_0x2a60fc(0x115)]('click',()=>{const _0x2d445a=_0x2a60fc;randomCode=generateRandomCode(0x4),document[_0x2d445a(0xc6)](_0x2d445a(0x103))[_0x2d445a(0xf9)]=randomCode,whichOne(randomCode);});const message=document[_0x2a60fc(0xc6)]('message'),send=document[_0x2a60fc(0xc6)](_0x2a60fc(0x10a)),fileInput=document[_0x2a60fc(0xc6)]('upload');fileInput[_0x2a60fc(0x115)](_0x2a60fc(0x116),_0x47721a=>{const _0x325960=_0x2a60fc,_0x3adcc2=_0x47721a['target']['files'][0x0],_0x5cd346=new FileReader();_0x5cd346[_0x325960(0x11f)]=()=>{const _0x111950=_0x325960,_0x1f8f19=_0x5cd346['result'];writeData(randomCode,_0x111950(0xee)+_0x1f8f19+_0x111950(0xd3),!![]);},_0x5cd346['readAsDataURL'](_0x3adcc2);}),message[_0x2a60fc(0x115)]('keydown',_0x476dcd=>{const _0x3d05d9=_0x2a60fc;_0x476dcd['key']==_0x3d05d9(0x106)&&writeData(randomCode,message[_0x3d05d9(0xc1)],![]);}),send[_0x2a60fc(0x115)]('click',()=>{const _0x21f15d=_0x2a60fc;writeData(randomCode,message[_0x21f15d(0xc1)],![]);});function writeData(_0x129bd2,_0xac8655,_0x13740b){const _0x4d50fa=_0x2a60fc;if(_0xac8655['trim']()=='')return![];else{message[_0x4d50fa(0xc1)]='';const _0x2accd5=[_0xac8655,new Date()['toLocaleDateString'](_0x4d50fa(0x107),{'month':'long','day':_0x4d50fa(0x113),'year':_0x4d50fa(0x113)})+_0x4d50fa(0xc0)+new Date()[_0x4d50fa(0x105)](),settings['profilePic'],settings[_0x4d50fa(0xfa)],_0x13740b];set(ref(db,'chat/'+_0x129bd2+_0x4d50fa(0x110)+index++),_0x2accd5);}}alert(_0x2a60fc(0xbe));
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
+
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDw-7aUpZN0S5CzBOp1Q31xhiIO15J6qD8",
+    authDomain: "chat-ee5e6.firebaseapp.com",
+    projectId: "chat-ee5e6",
+    storageBucket: "chat-ee5e6.firebasestorage.app",
+    messagingSenderId: "9734116155",
+    appId: "1:9734116155:web:2ce1f27d7485eab6ff1d1e",
+    measurementId: "G-QM8FR4B1N0"
+};
+let start
+const app = initializeApp(firebaseConfig)
+const db = getDatabase(app)
+const auth = getAuth(app);
+let totalRooms = 0
+
+let settings = JSON.parse(localStorage.getItem("settings"))
+function setup(){
+    const previousHTML = document.body.innerHTML
+    document.getElementById("chatArea").style.visibility = "hidden"
+    document.getElementById("rooms").style.display = "none"
+    document.getElementById("login").innerHTML = `
+        <div id="sign-in">
+            <button id = "signin">Sign in with google</button>
+        </div>
+    `
+    const signin = document.getElementById("signin")
+    async function login(){
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({
+            prompt: 'select_account' // Forces the account chooser dialog to show
+        });      
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        //console.log(user)
+        if (user.email == "krupalt78@gmail.com"){
+            localStorage.setItem("admin", true)
+        }
+        const userSettings = {
+            profilePic: user.photoURL,
+            displayName: user.displayName,
+            uid:user.uid
+        }
+        settings = {}
+        settings.profilePic = userSettings.profilePic
+        settings.displayName = userSettings.displayName
+        localStorage.setItem("settings", JSON.stringify(userSettings))
+        document.getElementById("login").style.display = "none"
+        document.getElementById("rooms").style.display = "flex"
+        document.getElementById("chatArea").style.visibility = "hidden"
+        window.location.reload()
+    }
+    signin.addEventListener("click", login)
+}
+try {
+    Object.keys(settings)
+} catch {
+    setup()
+}
+let index = 0
+
+
+window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'E'){
+        e.preventDefault()
+        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true){
+            const user = window.prompt("which one?")
+            if (user == "school"){
+                settings.mathActivitiesprofilePic = "https://lh3.googleusercontent.com/ogw/AF2bZyj2dHMsDhnJ8g2qKbGUkFnXYcR6lH-VE-S1pR__gh3UTxY=s64-c-mo"
+            } else if (user == "admin"){
+                settings.profilePic = "https://www.pngkey.com/png/full/263-2635979_admin-abuse.png"
+                settings.displayName = "Admin"
+            }
+        }
+    }
+})
+
+let previousRef = null
+let partofmain = ""
+let isOnMain = ""
+
+function whichOne(id, main, part){
+    //console.log(id)
+    if (previousRef !== null){
+        off(previousRef)
+    }
+    if (main){
+        previousRef = ref(db, `chat/main/content/${part}`)
+    } else {
+        previousRef = ref(db, `chat/${id}/content`)
+    }
+    let location
+    if (main){
+        location = ref(db, `chat/main/content/${part}`)
+    }
+    else {
+        location = ref(db, `chat/${id}/content`)
+    }
+    console.log(location)
+    onValue(location, (snapshot) => {
+        const val = snapshot.val()
+        if (val == null){
+            if (main){
+                set(ref(db, "chat/main/content/" + part), "")
+            } else {
+                set(ref(db, "chat/" + id + "/content"), "")
+            }
+            return false
+        }
+        //console.log(val)
+        const chatBox = document.getElementById("chatBox")
+        if (val == null){
+            chatBox.innerHTML = ""
+            index = 0
+        } else {
+            index = Object.keys(val).length
+            chatBox.innerHTML = ""
+            for (let i = 0; i < Object.keys(val).length; i++){
+                ////console.log(i, val[i])
+                const valArray = val[i]
+                const outer = document.createElement("div")
+                outer.classList.add("message")
+                const innerPic = document.createElement("img")
+                innerPic.src = valArray[2]
+                innerPic.classList.add("profile-pic")
+                innerPic.width = "30px"
+                innerPic.alt = "pic"
+                //referrerPolicy="no-referrer"
+                innerPic.referrerPolicy = "no-referrer"
+                const displayName = document.createElement("span")
+                displayName.innerHTML = valArray[3]
+                const date = document.createElement("div")
+                date.textContent = valArray[1]
+                date.classList.add("date")
+                const message = document.createElement("div")
+                if (valArray[4] == true){
+                    message.innerHTML = valArray[0]
+                } else if (valArray[4] == false){
+                    message.textContent = valArray[0]
+                }
+                chatBox.appendChild(outer)
+                outer.appendChild(innerPic)
+                outer.appendChild(displayName)
+                outer.appendChild(date)
+                outer.appendChild(message)
+            }
+            chatBox.scrollTop = chatBox.scrollHeight
+            //console.log("ok")
+            document.getElementById("login").style.display = "none"
+            document.getElementById("rooms").style.display = "none"
+            document.getElementById("chatArea").style.visibility = "visible"
+            
+        }
+    })
+}
+
+//join room
+const joinArea = document.getElementById("joinRoom")
+joinArea.style.display = "none"
+const joinRoom = document.getElementById("join")
+const joinButton = document.getElementById("joinbutton")
+let randomCode = document.getElementById("roomid").value
+joinRoom.addEventListener("click", () => {
+    document.getElementById("createroom").style.display = "none"
+    document.getElementById("online").textContent = randomCode
+    isOnMain = false
+    partofmain = ""
+    joinRoom.style.display = "none"
+    joinArea.style.display = "block"
+})
+
+joinButton.addEventListener("click", () => {
+    onValue(ref(db, "chat/"), (snapshot) => {
+        const val = snapshot.val()
+        const keys = Object.keys(val)
+        let found = false
+        for (var i =0; i < keys.length; i++){
+            randomCode = document.getElementById("roomid").value
+            //console.log(randomCode)
+            if (randomCode == keys[i]){
+                found = true
+            }
+        }
+        if (found){
+            document.getElementById("rooms").style.display = "none"
+            if (randomCode == "main"){
+                window.location.reload()
+            }
+            onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
+                const value = snapshot.val()
+                console.log(value, "fal")
+                if (value == null){
+                    set(ref(db, `users/${settings.uid}/rooms/0`), document.getElementById("roomid").value)
+                } else {
+                    const valueKeys = Object.keys(value)
+                    let foundroom = false
+                    for (let i = 0; i < valueKeys.length; i++){
+                        if (valueKeys[i] !== randomCode){
+                            foundroom = true
+                        } else {
+                            
+                        }
+                    }
+                    if (foundroom){
+                        set(ref(db, `users/${settings.uid}/rooms/${valueKeys.length}`), randomCode)
+                        console.log("going")
+                    }
+                }
+            }, {onlyOnce: true})
+            document.getElementById("online").textContent = randomCode
+            whichOne(document.getElementById("roomid").value, false, "")
+            
+        } else {
+            alert(`Room id "${randomCode}" not found`)
+        }
+    }, {onlyOnce:true})
+})
+
+function back(){
+    document.getElementById("createroom").style.display = "block"
+    joinRoom.style.display = "block"
+    joinArea.style.display = "none"
+}
+
+document.getElementById("wow").addEventListener("click", back)
+
+// create room
+
+function getRandomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+  
+function generateRandomCode(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = getRandomInteger(0, characters.length - 1);
+      code += characters.charAt(randomIndex);
+    }
+    return code;
+}
+
+const createRoom = document.getElementById("createroom")
+
+createRoom.addEventListener("click", () => {
+    randomCode = generateRandomCode(4)
+    document.getElementById("online").textContent = randomCode
+    whichOne(randomCode, false, "")
+    //console.log("click")
+})
+
+//set message and enter varialbes
+const message = document.getElementById("message")
+const send = document.getElementById("enter")
+
+
+// files 
+const fileInput = document.getElementById("upload")
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    const base64String = reader.result
+    writeData(randomCode, `<img src = "${base64String}" class = "chatPicture">`, true, isOnMain, partofmain)
+  };
+
+  reader.readAsDataURL(file);
+});
+// write data
+message.addEventListener("keydown", (e) => {
+    if (e.key == "Enter") {
+        writeData(randomCode, message.value, false, isOnMain, partofmain)
+    }
+})
+
+send.addEventListener("click", () => {
+    writeData(randomCode, message.value, false, isOnMain, partofmain)
+})
+
+
+function writeData(id, text, sendingAttachment, main, part){
+    if (text.trim() == ""){
+        return false
+    } else {
+        let location
+        if (main){
+            location = ref(db, `chat/main/content/${part}/${index++}`)
+        } else {
+            location = ref(db, `chat/${id}/content/${index++}`)
+        }
+        message.value = ""
+        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, settings.profilePic, settings.displayName,  sendingAttachment]
+        set(location, send)
+    }
+}
+
+// shortcut to main room
+
+const joinMainRoomButton = document.getElementById("joinMain")
+joinMainRoomButton.addEventListener("click", () => {
+    randomCode = "main"
+    document.getElementById("navbar").style.display = "flex"
+    partofmain = "general"
+    whichOne(randomCode, true, "general")
+    document.getElementById("rooms").style.display = "none"
+})
+
+// different channels of the main channel
+
+const rules = document.getElementById("rules")
+const general = document.getElementById("general")
+const memes = document.getElementById("memes")
+const school = document.getElementById("school")
+
+rules.addEventListener("click", () => {
+    randomCode = "main"
+    if (localStorage.getItem("admin") == "true"){
+        document.getElementById("message-container").style.display = "flex"
+        document.getElementById("upload").style.display = "block"
+    } else {
+        document.getElementById("message-container").style.display = "none"
+        document.getElementById("upload").style.display = "none"
+    }
+    partofmain = "rules"
+    whichOne("main", true, "rules")
+})
+
+general.addEventListener("click", () => {
+    randomCode = "main"
+    document.getElementById("message-container").style.display = "flex"
+    document.getElementById("upload").style.display = "block"
+    partofmain = "general"
+    whichOne("main", true, "general")
+})
+
+memes.addEventListener("click", () => {
+    randomCode = "main"
+    document.getElementById("message-container").style.display = "flex"
+    document.getElementById("upload").style.display = "block"
+    partofmain = "memes"
+    whichOne("main", true, "memes")
+})
+
+school.addEventListener("click", () => {
+    randomCode = "main"
+    document.getElementById("message-container").style.display = "flex"
+    document.getElementById("upload").style.display = "block"
+    partofmain = "school"
+    whichOne("main", true, "school")
+})
+
+window.setInterval(function(){
+    if (randomCode == "main"){
+        isOnMain = true
+        document.getElementById("online").textContent = `main/${partofmain}`
+    } else {
+        isOnMain = false
+        document.getElementById("online").textContent = randomCode
+    }
+})
+
+window.onload = function (){
+ //   alert("rooms will be deleted everyday")
+}
+
+// saved rooms
+
+onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
+    const val = snapshot.val()
+    if (val == null){
+        
+    } else {
+        const valKeys = Object.keys(val)
+        totalRooms = valKeys.length
+        document.getElementById("niceone").innerHTML = ""
+        for (var i = 0; i < valKeys.length; i++){
+            const newli = document.createElement("li")
+            newli.textContent = val[i]
+            document.getElementById("niceone").appendChild(newli)
+            const allli = document.querySelectorAll("#niceone li")
+            allli.forEach(li => {
+                li.addEventListener("click", () => {
+                    randomCode = li.textContent
+                    document.getElementById("online").textContent = randomCode
+                    whichOne(randomCode, false, "")
+                })
+            })
+        }
+        
+    }
+})

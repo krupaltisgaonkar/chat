@@ -143,7 +143,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 3vh;
+    margin-top: 10vh;
 }
 
 
@@ -160,16 +160,33 @@ body {
     color: white;
 }
 
+#navbar {
+    width:100%;
+    height: 8vh;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    display: none;
+    position: absolute;
+    z-index: 10000000000000000000;
+    background-color: #004554;
+    top: 0;
+}
+
 #navbar ul {
     list-style: none;
     display: flex;
 }
 
-#navbar ul li{
-    margin: 10px;
+#navbar ul li {
+    margin-left: 20px;
     cursor: pointer;
-    padding: 3px;
 }
+
+#navbar ul li:hover {
+    color: black;
+}
+
 
 #open {
     cursor: pointer;
@@ -244,7 +261,7 @@ body {
 
 #rooms input {
     background-color: #003f4e;
-    width: 28%;
+    width: 27%;
     height: 6vh;
     font-size: 1.2rem;
     outline: none;
@@ -268,6 +285,27 @@ body {
     z-index: 1000000000000000000000000000000000;
 }
 
+#my-rooms {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    width: 10%;
+    height:60vh;
+    left: 10px;
+    border-radius: 30px;
+    color: white;
+    padding: 10px;
+    border: rgb(255, 227, 202) 3px solid;
+    z-index: 10000000000000000000000000000000000000000000000000000000000000;
+}
+
+#my-rooms ul {
+    list-style: none;
+    color: rgb(0, 225, 0);
+}
+
+#my-rooms ul li {
+    cursor: pointer;
+}
 
 
 
@@ -281,24 +319,5 @@ body {
     }
     #left {
         width: 80%;
-    }
-  }
-  @media only screen and (max-width: 350px) {
-    #navbar ul{
-      flex-direction: column;
-    }
-    #navbar {
-        justify-content: none;
-        align-items: end;
-        display: block;
-        flex-direction: column;
-        background-color: black;
-    }
-
-    #navbar #open{
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        display: block;
     }
   }
