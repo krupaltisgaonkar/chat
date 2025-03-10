@@ -248,9 +248,10 @@ createRoom.addEventListener("click", () => {
     randomCode = generateRandomCode(4)
     document.getElementById("online").textContent = randomCode
     let stuff
-    const getRooms = onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
+    onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
         const val = snapshot.val()
         stuff =  Object.keys(val).length
+        console.log(stuff)
     }, {onlyOnce: true})
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
     whichOne(randomCode, false, "")
