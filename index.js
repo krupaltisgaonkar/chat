@@ -16,6 +16,7 @@ const app = initializeApp(firebaseConfig)
 const db = getDatabase(app)
 const auth = getAuth(app);
 let totalRooms = 0
+let notificationAllowed
 
 let settings = JSON.parse(localStorage.getItem("settings"))
 function setup(){
@@ -147,6 +148,10 @@ function whichOne(id, main, part){
                 outer.appendChild(displayName)
                 outer.appendChild(date)
                 outer.appendChild(message)
+            }
+            const lastMessage = val[val.length - 1]
+            if (lastMessage[5] !== settings.uid){
+                sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], lastMessage[2] )
             }
             chatBox.scrollTop = chatBox.scrollHeight
             //console.log("ok")
@@ -299,7 +304,7 @@ function writeData(id, text, sendingAttachment, main, part){
             location = ref(db, `chat/${id}/content/${index++}`)
         }
         message.value = ""
-        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, settings.profilePic, settings.displayName,  sendingAttachment]
+        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, settings.profilePic, settings.displayName,  sendingAttachment, settings.uid]
         set(location, send)
     }
 }
@@ -401,3 +406,30 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
         
     }
 })
+
+
+// sending notifications
+let notifications
+function askNotificationPermission() {
+    // Check if the browser supports notifications
+    if (!("Notification" in window)) {
+      alert("This browser does not support notifications.")
+      return;
+    }
+    Notification.requestPermission().then((permission) => {
+        alert("please enable notifications if you want to know if there are any new notifications")
+      // set the button to shown or hidden, depending on what the user answers
+      notifications = permission
+    });
+}
+
+askNotificationPermission()
+
+function sendNotification(message, place, name, pic){
+    if (notifications){
+        console.log(message, place, name, pic)
+        if (document.visibilityState == "hidden"){
+            const notification = new Notification(`New message from ${name} in room ${place}`, { body: message, icon: pic, vibrate: [200, 100, 200], });
+        }
+    }
+}
