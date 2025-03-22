@@ -1,16 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
-
-
+document.body.innerHTML = "Our servers are down today. Please come back tommorrow"
+/*
 const firebaseConfig = {
-    apiKey: "AIzaSyDw-7aUpZN0S5CzBOp1Q31xhiIO15J6qD8",
-    authDomain: "chat-ee5e6.firebaseapp.com",
-    projectId: "chat-ee5e6",
-    storageBucket: "chat-ee5e6.firebasestorage.app",
-    messagingSenderId: "9734116155",
-    appId: "1:9734116155:web:2ce1f27d7485eab6ff1d1e",
-    measurementId: "G-QM8FR4B1N0"
-};
+    apiKey: "AIzaSyAMfW_Qc7q1rlM-KJYKbUbc_zUqtZ24qNw",
+    authDomain: "chat-d70bd.firebaseapp.com",
+    projectId: "chat-d70bd",
+    storageBucket: "chat-d70bd.firebasestorage.app",
+    messagingSenderId: "421417324094",
+    appId: "1:421417324094:web:5d0634747c1b5661d14b6f",
+    measurementId: "G-P1HEZ14TS1"
+  };
 let start
 const app = initializeApp(firebaseConfig)
 const db = getDatabase(app)
@@ -263,7 +263,15 @@ createRoom.addEventListener("click", () => {
         stuff =  Object.keys(val).length
         console.log(stuff)
     }, {onlyOnce: true})
+    let totalnomRooms
+    onValue(ref(db, `rooms/`), (snapshot) => {
+        const val = snapshot.val()
+        console.log(val)
+        totalnomRooms = Object.keys(val)
+        console.log(totalnomRooms.length)
+    }, {onlyOnce: true})
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
+    set(ref(db, `rooms/${totalnomRooms}`), randomCode)
     document.getElementById("rooms").style.display = "none"
     document.getElementById("chatArea").style.display = "flex"
     whichOne(randomCode, false, "")
@@ -440,3 +448,4 @@ function sendNotification(message, place, name, pic){
         }
     }
 }
+    */
