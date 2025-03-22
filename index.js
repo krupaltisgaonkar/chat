@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
 
 
@@ -90,17 +90,18 @@ function whichOne(id, main, part){
     if (previousRef !== null){
         off(previousRef)
     }
+    let limit = 50
     if (main){
-        previousRef = ref(db, `chat/main/content/${part}`)
+        previousRef = query(ref(db, `chat/main/content/${part}`), limitToLast(limit))
     } else {
-        previousRef = ref(db, `chat/${id}/content`)
+        previousRef = query(ref(db, `chat/${id}/content`), limitToLast(limit))
     }
     let location
     if (main){
-        location = ref(db, `chat/main/content/${part}`)
+        location = query(ref(db, `chat/main/content/${part}`), limitToLast(limit))
     }
     else {
-        location = ref(db, `chat/${id}/content`)
+        location = query(ref(db, `chat/${id}/content`), limitToLast(limit))
     }
     onValue(location, (snapshot) => {
         const val = snapshot.val()
@@ -110,19 +111,25 @@ function whichOne(id, main, part){
             } else {
                 set(ref(db, "chat/" + id + "/content"), "")
             }
-            return false
         }
         //console.log(val)
         const chatBox = document.getElementById("chatBox")
+        console.log(val)
         if (val == null){
             chatBox.innerHTML = ""
             index = 0
+            document.getElementById("login").style.display = "none"
+            document.getElementById("rooms").style.display = "none"
+            document.getElementById("chatArea").style.visibility = "visible"
         } else {
-            index = Object.keys(val).length
+            console.log(parseFloat(Object.keys(val).slice(-1)[0]) + 1)
+            index = parseFloat(Object.keys(val).slice(-1)[0]) + 1
+            const messages = Object.entries(val)
+            console.log(messages)
             chatBox.innerHTML = ""
-            for (let i = 0; i < Object.keys(val).length; i++){
+            messages.forEach(([key, valArray]) => {
                 ////console.log(i, val[i])
-                const valArray = val[i]
+                console.log(index)
                 const outer = document.createElement("div")
                 outer.classList.add("message")
                 const innerPic = document.createElement("img")
@@ -148,8 +155,9 @@ function whichOne(id, main, part){
                 outer.appendChild(displayName)
                 outer.appendChild(date)
                 outer.appendChild(message)
-            }
-            const lastMessage = val[val.length - 1]
+            })
+            const lastMessage = Object.entries(val)[Object.keys(val).length - 1]
+            console.log(lastMessage)
             if (lastMessage[5] !== settings.uid){
                 sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], lastMessage[2] )
             }
@@ -178,10 +186,14 @@ joinRoom.addEventListener("click", () => {
     joinArea.style.display = "block"
 })
 
+
+
+
+
 joinButton.addEventListener("click", () => {
-    onValue(ref(db, "chat/"), (snapshot) => {
+    onValue(ref(db, "rooms/"), (snapshot) => {
         const val = snapshot.val()
-        const keys = Object.keys(val)
+        const keys = val
         let found = false
         for (var i =0; i < keys.length; i++){
             randomCode = document.getElementById("roomid").value
@@ -196,22 +208,15 @@ joinButton.addEventListener("click", () => {
                 window.location.reload()
             }
             onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
-                const value = snapshot.val()
-                if (value == null){
-                    set(ref(db, `users/${settings.uid}/rooms/0`), document.getElementById("roomid").value)
-                } else {
-                    const valueKeys = Object.keys(value)
-                    let foundroom = false
-                    for (let i = 0; i < valueKeys.length; i++){
-                        if (valueKeys[i] !== randomCode){
-                            foundroom = true
-                        } else {
-                            
-                        }
+                const val = snapshot.val()
+                let foundCode = false
+                for (var k = 0; k < Object.keys(val).length; k++){
+                    if (val[k] == randomCode){
+                        foundCode = true
                     }
-                    if (foundroom){
-                        set(ref(db, `users/${settings.uid}/rooms/${valueKeys.length}`), randomCode)
-                    }
+                }
+                if (!foundCode){
+                    set(ref(db, `users/${settings.uid}/rooms/${Object.keys(val).length}`), randomCode)
                 }
             }, {onlyOnce: true})
             document.getElementById("online").textContent = randomCode
@@ -259,6 +264,8 @@ createRoom.addEventListener("click", () => {
         console.log(stuff)
     }, {onlyOnce: true})
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
+    document.getElementById("rooms").style.display = "none"
+    document.getElementById("chatArea").style.display = "flex"
     whichOne(randomCode, false, "")
     //console.log("click")
 })
@@ -304,6 +311,7 @@ function writeData(id, text, sendingAttachment, main, part){
             location = ref(db, `chat/${id}/content/${index++}`)
         }
         message.value = ""
+        console.log(index)
         const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, settings.profilePic, settings.displayName,  sendingAttachment, settings.uid]
         set(location, send)
     }
@@ -394,7 +402,8 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
             const newli = document.createElement("li")
             newli.textContent = val[i]
             document.getElementById("niceone").appendChild(newli)
-            const allli = document.querySelectorAll("#niceone li")
+        }
+        const allli = document.querySelectorAll("#niceone li")
             allli.forEach(li => {
                 li.addEventListener("click", () => {
                     randomCode = li.textContent
@@ -402,7 +411,6 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                     whichOne(randomCode, false, "")
                 })
             })
-        }
         
     }
 })
@@ -411,15 +419,15 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
 // sending notifications
 let notifications
 function askNotificationPermission() {
-    // Check if the browser supports notifications
     if (!("Notification" in window)) {
       alert("This browser does not support notifications.")
       return;
     }
     Notification.requestPermission().then((permission) => {
-        alert("please enable notifications if you want to know if there are any new notifications")
-      // set the button to shown or hidden, depending on what the user answers
       notifications = permission
+      if (!permission){
+        alert("Please enable notifications if you want to know if there are any new messages. We promise you will only receive notifications of the chat you are on,")
+      }
     });
 }
 
@@ -427,7 +435,6 @@ askNotificationPermission()
 
 function sendNotification(message, place, name, pic){
     if (notifications){
-        console.log(message, place, name, pic)
         if (document.visibilityState == "hidden"){
             const notification = new Notification(`New message from ${name} in room ${place}`, { body: message, icon: pic, vibrate: [200, 100, 200], });
         }
