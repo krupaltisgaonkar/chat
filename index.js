@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
-document.body.innerHTML = "Our servers are down today. Please come back tommorrow"
-/*
+
 const firebaseConfig = {
     apiKey: "AIzaSyAMfW_Qc7q1rlM-KJYKbUbc_zUqtZ24qNw",
     authDomain: "chat-d70bd.firebaseapp.com",
@@ -141,6 +140,7 @@ function whichOne(id, main, part){
                 innerPic.referrerPolicy = "no-referrer"
                 const displayName = document.createElement("span")
                 displayName.innerHTML = valArray[3]
+                displayName.classList.add("displayName")
                 const date = document.createElement("div")
                 date.textContent = valArray[1]
                 date.classList.add("date")
@@ -151,15 +151,14 @@ function whichOne(id, main, part){
                     message.textContent = valArray[0]
                 }
                 chatBox.appendChild(outer)
-                outer.appendChild(innerPic)
                 outer.appendChild(displayName)
                 outer.appendChild(date)
                 outer.appendChild(message)
             })
-            const lastMessage = Object.entries(val)[Object.keys(val).length - 1]
+            const lastMessage = Object.entries(val)[Object.keys(val).length - 1][1]
             console.log(lastMessage)
             if (lastMessage[5] !== settings.uid){
-                sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], lastMessage[2] )
+                sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], "")
             }
             chatBox.scrollTop = chatBox.scrollHeight
             //console.log("ok")
@@ -195,13 +194,16 @@ joinButton.addEventListener("click", () => {
         const val = snapshot.val()
         const keys = val
         let found = false
-        for (var i =0; i < keys.length; i++){
+        console.log(document.getElementById("roomid").value)
+        for (var i =0; i < Object.keys(keys).length; i++){
+            console.log(i)
             randomCode = document.getElementById("roomid").value
-            //console.log(randomCode)
+            console.log(randomCode)
             if (randomCode == keys[i]){
                 found = true
             }
         }
+        console.log("ee")
         if (found){
             document.getElementById("rooms").style.display = "none"
             if (randomCode == "main"){
@@ -320,7 +322,7 @@ function writeData(id, text, sendingAttachment, main, part){
         }
         message.value = ""
         console.log(index)
-        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, settings.profilePic, settings.displayName,  sendingAttachment, settings.uid]
+        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.displayName,  sendingAttachment, settings.uid]
         set(location, send)
     }
 }
@@ -444,8 +446,7 @@ askNotificationPermission()
 function sendNotification(message, place, name, pic){
     if (notifications){
         if (document.visibilityState == "hidden"){
-            const notification = new Notification(`New message from ${name} in room ${place}`, { body: message, icon: pic, vibrate: [200, 100, 200], });
+            const notification = new Notification(`New message from ${name} in room ${place}`, { body: message, icon: "icon.png", vibrate: [200, 100, 200], });
         }
     }
 }
-    */

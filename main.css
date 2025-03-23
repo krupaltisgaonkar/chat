@@ -146,10 +146,15 @@ body {
     margin-top: 10vh;
 }
 
-
+.displayName {
+    font-size: 20px;
+    font-weight:bolder;
+    color: #ffffff;
+    display: flex;
+}
 
 .message {
-    color: white;
+    color: rgb(201, 201, 201);
     font-size: 20px;
     line-height: 30px;
 }
