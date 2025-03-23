@@ -42,7 +42,7 @@ body {
 }
 
 #left {
-    width: 30%;
+    width: 50%;
     height: 10vh;
     background-color: rgba(0, 0, 0, 0.326);
     border-radius: 30px;
@@ -357,6 +357,11 @@ body {
     z-index: 10000;
     font-family: monospace;
     bottom: 10px;
+}
+
+a {
+    color: white;
+    font-family: monospace;
 }
 
 

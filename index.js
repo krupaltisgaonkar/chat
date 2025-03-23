@@ -1,8 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query, remove} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
-document.body.innerHTML = "wait for one more update by 10 AM PST"
 
-/*
 const firebaseConfig = {
     apiKey: "AIzaSyAMfW_Qc7q1rlM-KJYKbUbc_zUqtZ24qNw",
     authDomain: "chat-d70bd.firebaseapp.com",
@@ -38,7 +36,7 @@ function setup(){
         });      
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
-        //console.log(user)
+        ////console.log(user)
         if (user.email == "krupalt78@gmail.com"){
             localStorage.setItem("admin", true)
         }
@@ -87,7 +85,7 @@ let partofmain = ""
 let isOnMain = ""
 
 function whichOne(id, main, part){
-    //console.log(id)
+    ////console.log(id)
     if (previousRef !== null){
         off(previousRef)
     }
@@ -113,9 +111,9 @@ function whichOne(id, main, part){
                 set(ref(db, "chat/" + id + "/content"), "")
             }
         }
-        //console.log(val)
+        ////console.log(val)
         const chatBox = document.getElementById("chatBox")
-        console.log(val)
+        //console.log(val)
         if (val == null){
             chatBox.innerHTML = ""
             index = 0
@@ -123,14 +121,14 @@ function whichOne(id, main, part){
             document.getElementById("rooms").style.display = "none"
             document.getElementById("chatArea").style.visibility = "visible"
         } else {
-            console.log(parseFloat(Object.keys(val).slice(-1)[0]) + 1)
+            //console.log(parseFloat(Object.keys(val).slice(-1)[0]) + 1)
             index = parseFloat(Object.keys(val).slice(-1)[0]) + 1
             const messages = Object.entries(val)
-            console.log(messages)
+            //console.log(messages)
             chatBox.innerHTML = ""
             messages.forEach(([key, valArray]) => {
-                ////console.log(i, val[i])
-                console.log(index)
+                //////console.log(i, val[i])
+                //console.log(index)
                 const outer = document.createElement("div")
                 outer.classList.add("message")
                 const innerPic = document.createElement("img")
@@ -158,12 +156,12 @@ function whichOne(id, main, part){
                 outer.appendChild(message)
             })
             const lastMessage = Object.entries(val)[Object.keys(val).length - 1][1]
-            console.log(lastMessage)
+            //console.log(lastMessage)
             if (lastMessage[5] !== settings.uid){
                 sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], "")
             }
             chatBox.scrollTop = chatBox.scrollHeight
-            //console.log("ok")
+            ////console.log("ok")
             document.getElementById("login").style.display = "none"
             document.getElementById("rooms").style.display = "none"
             document.getElementById("chatArea").style.visibility = "visible"
@@ -196,16 +194,16 @@ joinButton.addEventListener("click", () => {
         const val = snapshot.val()
         const keys = val
         let found = false
-        console.log(document.getElementById("roomid").value)
+        //console.log(document.getElementById("roomid").value)
         for (var i =0; i < Object.keys(keys).length; i++){
-            console.log(i)
+            //console.log(i)
             randomCode = document.getElementById("roomid").value
-            console.log(randomCode)
+            //console.log(randomCode)
             if (randomCode == keys[i]){
                 found = true
             }
         }
-        console.log("ee")
+        //console.log("ee")
         if (found){
             document.getElementById("rooms").style.display = "none"
             if (randomCode == "main"){
@@ -213,14 +211,19 @@ joinButton.addEventListener("click", () => {
             }
             onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                 const val = snapshot.val()
-                let foundCode = false
-                for (var k = 0; k < Object.keys(val).length; k++){
-                    if (val[k] == randomCode){
-                        foundCode = true
+                if (val !== null){
+                    let foundCode = false
+                    for (var k = 0; k < Object.keys(val).length; k++){
+                        if (val[k] == randomCode){
+                            foundCode = true
+                        }
+                    }
+                    if (!foundCode){
+                        set(ref(db, `users/${settings.uid}/rooms/${Object.keys(val).length}`), randomCode)
                     }
                 }
-                if (!foundCode){
-                    set(ref(db, `users/${settings.uid}/rooms/${Object.keys(val).length}`), randomCode)
+                else {
+                    set(ref(db, `users/${settings.uid}/rooms/0`), randomCode)
                 }
             }, {onlyOnce: true})
             document.getElementById("online").textContent = randomCode
@@ -265,21 +268,21 @@ createRoom.addEventListener("click", () => {
     onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
         const val = snapshot.val()
         stuff =  Object.keys(val).length
-        console.log(stuff)
+        //console.log(stuff)
     }, {onlyOnce: true})
     let totalnomRooms
     onValue(ref(db, `rooms/`), (snapshot) => {
         const val = snapshot.val()
-        console.log(val)
+        //console.log(val)
         totalnomRooms = Object.keys(val)
-        console.log(totalnomRooms.length)
+        set(ref(db, `rooms/${totalnomRooms.length}`), randomCode)
+        //console.log(totalnomRooms.length)
     }, {onlyOnce: true})
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
-    set(ref(db, `rooms/${totalnomRooms}`), randomCode)
     document.getElementById("rooms").style.display = "none"
     document.getElementById("chatArea").style.display = "flex"
     whichOne(randomCode, false, "")
-    //console.log("click")
+    ////console.log("click")
 })
 
 //set message and enter varialbes
@@ -323,7 +326,7 @@ function writeData(id, text, sendingAttachment, main, part){
             location = ref(db, `chat/${id}/content/${index++}`)
         }
         message.value = ""
-        console.log(index)
+        //console.log(index)
         const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.displayName,  sendingAttachment, settings.uid]
         set(location, send)
     }
@@ -452,4 +455,3 @@ function sendNotification(message, place, name, pic){
         }
     }
 }
-    */
