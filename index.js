@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
+document.body.innerHTML = "wait for one more update by 10 AM PST"
 
+/*
 const firebaseConfig = {
     apiKey: "AIzaSyAMfW_Qc7q1rlM-KJYKbUbc_zUqtZ24qNw",
     authDomain: "chat-d70bd.firebaseapp.com",
@@ -450,3 +452,4 @@ function sendNotification(message, place, name, pic){
         }
     }
 }
+    */
