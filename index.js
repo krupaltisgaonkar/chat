@@ -64,6 +64,10 @@ try {
 }
 let index = 0
 
+if (settings.uid == "FYa5nSQUY7cU3GnBGDrLn61fwsF3" || settings.uid == "sbfj3UM04VXjgZdHq4nALxQXsIh1"){
+    localstorage.setItem("admin", true)
+    alert("You are an admin! Press control+shift+e to see a prompt open. When you see it, type in 'admin' without the parenthesis. Your name and profile pic will change to being admin.")
+}
 
 window.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === 'E'){
@@ -75,6 +79,7 @@ window.addEventListener("keydown", (e) => {
             } else if (user == "admin"){
                 settings.profilePic = "https://www.pngkey.com/png/full/263-2635979_admin-abuse.png"
                 settings.displayName = "Admin"
+                alert("You are now an admin!")
             }
         }
     }
