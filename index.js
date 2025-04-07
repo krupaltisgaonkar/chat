@@ -64,6 +64,7 @@ try {
 }
 let index = 0
 
+
 if (settings.uid == "FYa5nSQUY7cU3GnBGDrLn61fwsF3" || settings.uid == "sbfj3UM04VXjgZdHq4nALxQXsIh1"){
     localStorage.setItem("admin", true)
     alert("You are an admin! Press control+shift+e to see a prompt open. When you see it, type in 'admin' without the parenthesis. Your name and profile pic will change to being admin.")
