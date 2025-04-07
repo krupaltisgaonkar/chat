@@ -5,6 +5,7 @@
     transition: 0.3s all;
 }
 
+
 #background {
     background: linear-gradient(to bottom right, #7d0000, #00607a); /* Example: red to blue gradient from top to bottom */
     height: 100vh;
