@@ -64,11 +64,6 @@ try {
 }
 let index = 0
 
-if (settings.uid == "FYa5nSQUY7cU3GnBGDrLn61fwsF3" || settings.uid == "sbfj3UM04VXjgZdHq4nALxQXsIh1"){
-    localStorage.setItem("admin", true)
-    alert("You are an admin! Press control+shift+e to see a prompt open. When you see it, type in 'admin' without the parenthesis. Your name and profile pic will change to being admin.")
-}
-
 set(ref(db, `users/${settings.uid}/displayName/`), settings.displayName)
 set(ref(db, `users/${settings.uid}/profilePic`), settings.profilePic)
 
@@ -85,10 +80,6 @@ window.addEventListener("keydown", (e) => {
             }
         }
     }
-    if (e.ctrlKey && e.shiftKey && e.key === 'h'){
-        e.preventDefault()
-        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section: ctrl + shift + e: switch to admin role.")
-    }
 })
 
 let previousRef = null
@@ -98,6 +89,24 @@ let partofmain = ""
 let isOnMain = ""
 
 function whichOne(id, main, part){
+    // set listening location
+    if (previousRef !== null){
+        off(previousRef)
+    }
+    if (previousOnline !== null){
+        off(ref(db, previousOnline))
+        const good = previousOnline
+        console.log(previousOnline)
+        onValue(ref(db, good), (snapshot) => {
+            const stuff = Object.values(snapshot.val())
+            for (var i = 0; i < stuff.length; i++){
+                if (stuff[i] == settings.uid){
+                    remove(ref(db, `${good}/${i}`))
+                }
+            }
+        }, {onlyOnce: true})
+    }
+    deletePersonOnline(`chat/${main ? "main": id}/online`)
     let limit = 50
     if (main){
         previousRef = query(ref(db, `chat/main/content/${part}`), limitToLast(limit))
@@ -114,6 +123,73 @@ function whichOne(id, main, part){
         previousOnline = `chat/${id}/online`
     }
 
+    // people online
+    document.getElementById("people-online").style.display = "flex"
+    let peopleIndex
+    
+    if (main){
+        onValue(ref(db, previousOnline), (snapshot) => {
+            const val = snapshot.val()
+            console.log(val)
+            if (val == null) {
+                set(ref(db, `chat/main/online/0`), settings.uid)
+                peopleIndex = 0
+            } else {
+                const allvalues = Object.values(val)
+                console.log(allvalues)
+                let found = false
+                document.getElementById("vow").innerHTML = ""
+                for (let i = 0; i < allvalues.length; i++){
+                    if (allvalues[i] == settings.uid){
+                        found = true
+                    }
+                    const element = document.createElement("li")
+                    onValue(ref(db, `users/${settings.uid}/displayName`), (snapshot) => {
+                        element.textContent = `${snapshot.val()}`
+                    }, {onlyOnce: true})
+                    document.getElementById("vow").appendChild(element)
+                }
+                if (!found){
+                    console.log("no found")
+                    peopleIndex = allvalues.length
+                    set(ref(db, `chat/main/online/${peopleIndex}`), settings.uid)
+                }
+                
+                
+            }
+        })
+    } else {
+        onValue(ref(db, previousOnline), (snapshot) => {
+            const val = snapshot.val()
+            console.log(val)
+            if (val == null) {
+                set(ref(db, `chat/${id}/online/0`), settings.uid)
+                peopleIndex = 0
+            } else {
+                const allvalues = Object.values(val)
+                console.log(allvalues)
+                let found = false
+                document.getElementById("vow").innerHTML = ""
+                for (let i = 0; i < allvalues.length; i++){
+                    if (allvalues[i] == settings.uid){
+                        found = true
+                    }
+                    const element = document.createElement("li")
+                    onValue(ref(db, `users/${settings.uid}/displayName`), (snapshot) => {
+                        element.textContent = `${snapshot.val()}`
+                    }, {onlyOnce: true})
+                    document.getElementById("vow").appendChild(element)
+                }
+                if (!found){
+                    console.log("no found")
+                    peopleIndex = allvalues.length
+                    set(ref(db, `chat/${id}/online/${peopleIndex}`), settings.uid)
+                }
+                
+                
+            }
+        })
+    }
     // put messages
     onValue(location, (snapshot) => {
         const val = snapshot.val()
@@ -149,15 +225,16 @@ function whichOne(id, main, part){
             //console.log(parseFloat(Object.keys(val).slice(-1)[0]) + 1)
             index = parseFloat(Object.keys(val).slice(-1)[0]) + 1
             const messages = Object.entries(val)
-            const messageKey = Object.keys(val)
             //console.log(messages)
-            for (let i = 0; i < messages.length; i++){
-                const valArray = messages[i][1]
+            messages.forEach(([key, valArray]) => {
+                //////console.log(i, val[i])
                 //console.log(index)
                 const outer = document.createElement("div")
                 outer.classList.add("message")
                 const innerPic = document.createElement("img")
-                innerPic.src = valArray[valArray.length - 1]
+                onValue(ref(db, `users/${valArray[5]}/profilePic`), (snapshot) => {
+                    innerPic.src = snapshot.val()
+                }, {onlyOnce: true})
                 innerPic.classList.add("profile-pic")
                 innerPic.width = "30px"
                 innerPic.alt = "pic"
@@ -178,32 +255,10 @@ function whichOne(id, main, part){
                 chatBox.appendChild(outer)
                 outer.appendChild(innerPic)
                 outer.appendChild(displayName)
-                if (localStorage.getItem("admin")){
-                    const adminOptions = document.createElement("div")
-                    adminOptions.classList.add("admin-options")
-                    adminOptions.textContent = "Edit"
-                    adminOptions.id = messageKey[i]
-                    outer.appendChild(adminOptions)
-                }
-                outer.appendChild
                 outer.appendChild(date)
                 outer.appendChild(message)
-            }
+            })
             const lastMessage = Object.entries(val)[Object.keys(val).length - 1][1]
-            if (localStorage.getItem("admin")){
-                const adminOptions = document.querySelectorAll(".admin-options")
-                adminOptions.forEach(adminOption => {
-                    adminOption.addEventListener("click", () => {
-                        const promptAns = window.prompt("What would you like to change it to?")
-                        if (promptAns.trim() == ""){
-                            return false
-                        } else {
-                            set(ref(db, main ? `chat/main/content/${part}/${adminOption.id}/0` : `chat/${id}/content/${adminOption.id}/0`), promptAns)
-                        }
-
-                    })
-                })
-            }
             //console.log(lastMessage)
             if (lastMessage[5] !== settings.uid){
                 sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], "")
@@ -377,7 +432,7 @@ function writeData(id, text, sendingAttachment, main, part){
         }
         message.value = ""
         //console.log(index)
-        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.displayName,  sendingAttachment, settings.uid, settings.profilePic]
+        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.displayName,  sendingAttachment, settings.uid]
         set(location, send)
     }
 }
@@ -505,4 +560,55 @@ function sendNotification(message, place, name, pic){
         }
     }
 }
+
+// online
+
+
+// search for people
+const searchPeople = document.getElementById("search-people")
+const searchPlace = document.getElementById("vow")
+searchPeople.addEventListener("input", () => {
+    let allvow = Array.from(searchPlace.getElementsByTagName("li"))
+    allvow.forEach(item => {
+        if (item.textContent.toLowerCase().includes(searchPeople.value)){
+            item.classList.remove("hide")
+        } else {
+            item.classList.add("hide")
+        }
+    })
+})
+
+
+// dlete person status
+
+function deletePersonOnline(path) {
+    const db = getDatabase();
+    const dbRef = ref(db, path);
+
+    get(dbRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+            console.log("No data found at path:", path);
+            return;
+        }
+
+        // Iterate over the actual key-value pairs in Firebase
+        snapshot.forEach((childSnapshot) => {
+            if (childSnapshot.val() === settings.uid) {
+                const newRef = ref(db, `${path}/${childSnapshot.key}`);
+
+                // Ensure any previous onDisconnect() is canceled before setting a new one
+                onDisconnect(newRef).cancel()
+                    .then(() => {
+                        console.log("Previous onDisconnect cancelled, setting new one.");
+                        return onDisconnect(newRef).remove();
+                    })
+                    .then(() => console.log(`Data at ${path}/${childSnapshot.key} will be deleted on disconnect.`))
+                    .catch((error) => console.error("Error updating onDisconnect:", error));
+
+                return; // Stop looping once we find the correct value
+            }
+        });
+    }).catch((error) => console.error("Error fetching data:", error));
+}
+
 
