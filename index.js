@@ -91,9 +91,9 @@ window.addEventListener("keydown", (e) => {
             }
         }
     }
-    if (e.ctrlKey && e.shiftKey && e.key === 'h'){
+    if (e.ctrlKey && e.shiftKey && e.key === 'H'){
         e.preventDefault()
-        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section: ctrl + shift + e: switch to admin role.")
+        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section:\nctrl + shift + e: switch to admin role.")
     }
 })
 
@@ -187,26 +187,92 @@ function whichOne(id, main, part){
                 if (localStorage.getItem("admin")){
                     const adminOptions = document.createElement("div")
                     adminOptions.classList.add("admin-options")
-                    adminOptions.textContent = "Edit"
                     adminOptions.id = messageKey[i]
+
+                    const edit = document.createElement("div")
+                    edit.textContent = "✏️"
+                    edit.classList.add("edit")
+                    edit.title = "Edit this message"
+
+                    const remove = document.createElement("div")
+                    remove.textContent = "🗑️"
+                    remove.classList.add("remove")
+                    remove.title = "Delete this message"
+
+                    const ban = document.createElement("div")
+                    ban.textContent = "🚫"
+                    ban.classList.add("ban")
+                    ban.title = "Ban this person"
+
                     outer.appendChild(adminOptions)
+                    adminOptions.appendChild(edit)
+                    adminOptions.appendChild(remove)
+                    adminOptions.appendChild(ban)
                 }
-                outer.appendChild
                 outer.appendChild(date)
                 outer.appendChild(message)
             }
             const lastMessage = Object.entries(val)[Object.keys(val).length - 1][1]
             if (localStorage.getItem("admin")){
-                const adminOptions = document.querySelectorAll(".admin-options")
-                adminOptions.forEach(adminOption => {
-                    adminOption.addEventListener("click", () => {
+                const edits = document.querySelectorAll(".admin-options .edit")
+                edits.forEach(edit => {
+                    edit.addEventListener("click", () => {
                         const promptAns = window.prompt("What would you like to change it to?")
                         if (promptAns.trim() == ""){
                             return false
                         } else {
-                            set(ref(db, main ? `chat/main/content/${part}/${adminOption.id}/0` : `chat/${id}/content/${adminOption.id}/0`), promptAns)
+                            set(ref(db, main ? `chat/main/content/${part}/${edit.parentElement.id}/0` : `chat/${id}/content/${edit.parentElement.id}/0`), promptAns)
                         }
 
+                    })
+                })
+
+                const remove = document.querySelectorAll(".admin-options .remove")
+                remove.forEach(remove => {
+                    remove.addEventListener("click", () => {
+                        const confirm = window.confirm("Do you want to delete this message?")
+                        if (confirm){
+                            set(ref(db, main ? `chat/main/content/${part}/${remove.parentElement.id}/0` : `chat/${id}/content/${remove.parentElement.id}/0`), `<em>This message was deleted by an admin.</em>`)
+                            set(ref(db, main ? `chat/main/content/${part}/${remove.parentElement.id}/4` : `chat/${id}/content/${remove.parentElement.id}/4`), true)
+                        } else {
+                            return false
+                        }
+
+                    })
+                })
+
+                const bans = document.querySelectorAll(".admin-options .ban")
+                bans.forEach(ban => {
+                    ban.addEventListener("click", () => {
+                        onValue(ref(db, main ? `chat/main/ban` : `chat/${id}/ban`), (snapshot) => {
+                            const vow = snapshot.val()
+                            let banList
+                            if (vow == null) banList = ""; else banList = Object.keys(vow)
+                            let banId = ""
+                            // get user id
+                            onValue(ref(db, main ? `chat/main/content/${part}/${ban.parentElement.id}/5` : `chat/${id}/content/${ban.parentElement.id}/5`), (snapshot) => {
+                                const snap = snapshot.val()
+                                banId = snap
+                                let found = false
+                                for (let k = 0; k < banList.length; k++){
+                                    if (banId == banList[k]){
+                                        found = true
+                                    }
+                                }
+                                if (!found){
+                                    const confirmBan = confirm(`Ban this account?`)
+                                    if (confirmBan){
+                                        set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), true)
+                                    }
+                                } else {
+                                    const confirmBan = confirm("Let this person back into this chat?")
+                                    if (confirmBan){
+                                        set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), null)
+                                    }
+                                }
+                            }, {onlyOnce: true})
+                        }, {onlyOnce: true})
+                            
                     })
                 })
             }
@@ -263,6 +329,13 @@ joinButton.addEventListener("click", () => {
             if (randomCode == "main"){
                 window.location.reload()
             }
+            onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
+                const banList = Object.keys(snapshot.val())
+                if (banList.includes(settings.uid)){
+                    alert("you are banned from this chat")
+                    window.location.reload()
+                }
+            }, {onlyOnce: true})
             if (randomCode !== "main"){
                 onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                     const val = snapshot.val()
@@ -479,6 +552,13 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                 li.addEventListener("click", () => {
                     randomCode = li.textContent
                     document.getElementById("online").textContent = randomCode
+                    onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
+                        const banList = Object.keys(snapshot.val())
+                        if (banList.includes(settings.uid)){
+                            alert("you are banned from this chat")
+                            window.location.reload()
+                        }
+                    }, {onlyOnce: true})
                     whichOne(randomCode, false, "")
                 })
             })

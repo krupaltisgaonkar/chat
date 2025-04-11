@@ -150,14 +150,19 @@ body {
 
 .admin-options {
     float: right;
-    cursor: pointer;
-    width: 50px;
+    width: max-content;
     text-align:center;
     border-radius:30px;
+    display: flex;
 }
 
-.admin-options:hover {
+.admin-options *:hover {
     background-color: #7d0000;
+}
+.admin-options * {
+    width: 30px;
+    margin-right: 10px;
+    cursor: pointer;
 }
 
 .displayName {
