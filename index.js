@@ -468,6 +468,13 @@ joinMainRoomButton.addEventListener("click", () => {
     randomCode = "main"
     document.getElementById("navbar").style.display = "flex"
     partofmain = "general"
+    onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
+        const banList = Object.keys(snapshot.val())
+        if (banList.includes(settings.uid)){
+            alert("you are banned from this chat")
+            window.location.reload()
+        }
+    }, {onlyOnce: true})
     whichOne(randomCode, true, "general")
     document.getElementById("rooms").style.display = "none"
 })
