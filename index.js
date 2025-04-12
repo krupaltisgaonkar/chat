@@ -254,20 +254,33 @@ function whichOne(id, main, part){
                                 const snap = snapshot.val()
                                 banId = snap
                                 let found = false
-                                for (let k = 0; k < banList.length; k++){
-                                    if (banId == banList[k]){
-                                        found = true
+                                let banningSelf = false
+                                onValue(ref(db, main ? `chat/main/content/${part}/${ban.parentElement.id}/5` : `chat/${id}/content/${ban.parentElement.id}/5`), (snapshot) => {
+                                    const userBan = snapshot.val()
+                                    if (userBan == settings.uid){
+                                        alert("you can't ban ur self")
+                                        banningSelf = true
                                     }
-                                }
-                                if (!found){
-                                    const confirmBan = confirm(`Ban this account?`)
-                                    if (confirmBan){
-                                        set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), true)
-                                    }
+                                }, {onlyOnce: true})
+                                
+                                if (banningSelf){
+                                    return false
                                 } else {
-                                    const confirmBan = confirm("Let this person back into this chat?")
-                                    if (confirmBan){
-                                        set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), null)
+                                    for (let k = 0; k < banList.length; k++){
+                                        if (banId == banList[k]){
+                                            found = true
+                                        }
+                                    }
+                                    if (!found){
+                                        const confirmBan = confirm(`Ban this account?`)
+                                        if (confirmBan){
+                                            set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), true)
+                                        }
+                                    } else {
+                                        const confirmBan = confirm("Let this person back into this chat?")
+                                        if (confirmBan){
+                                            set(ref(db, main ? `chat/main/ban/${banId}` : `chat/${id}/ban/${banId}`), null)
+                                        }
                                     }
                                 }
                             }, {onlyOnce: true})
