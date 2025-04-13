@@ -657,6 +657,7 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                     li.addEventListener("click", () => {
                         //console.log("hi")
                         randomCode = li.id
+                        document.getElementById("roomNameDiv").style.display = "flex"
                         document.getElementById("roomName").value = li.textContent
                         document.getElementById("online").textContent = randomCode
                         onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
