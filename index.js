@@ -18,6 +18,7 @@ let totalRooms = 0
 let notificationAllowed
 
 let settings = JSON.parse(localStorage.getItem("settings"))
+
 function setup(){
     const previousHTML = document.body.innerHTML
     document.getElementById("chatArea").style.visibility = "hidden"
@@ -37,17 +38,14 @@ function setup(){
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         ////console.log(user)
-        if (user.email == "krupalt78@gmail.com"){
-            localStorage.setItem("admin", true)
-        }
         const userSettings = {
             profilePic: user.photoURL,
             displayName: user.displayName,
-            uid:user.uid
+            uid:user.uid,
+            email: user.email
         }
         settings = {}
-        settings.profilePic = userSettings.profilePic
-        settings.displayName = userSettings.displayName
+        settings = userSettings
         localStorage.setItem("settings", JSON.stringify(userSettings))
         document.getElementById("login").style.display = "none"
         document.getElementById("rooms").style.display = "flex"
@@ -59,31 +57,47 @@ function setup(){
 }
 try {
     Object.keys(settings)
+    if (settings.email == null){
+        localStorage.clear()
+        alert("This application is out of date. We will reload the page and you will have to sign in again.")
+        window.location.reload()
+    }
 } catch {
     setup()
 }
 let index = 0
 
-if (settings.uid == "FYa5nSQUY7cU3GnBGDrLn61fwsF3" || settings.uid == "sbfj3UM04VXjgZdHq4nALxQXsIh1"){
-    localStorage.setItem("admin", true)
-    alert("You are an admin! Press control+shift+e to see a prompt open. When you see it, type in 'admin' without the parenthesis. Your name and profile pic will change to being admin.")
-}
-
 set(ref(db, `users/${settings.uid}/displayName/`), settings.displayName)
 set(ref(db, `users/${settings.uid}/profilePic`), settings.profilePic)
+set(ref(db, `users/${settings.uid}/email`), settings.email)
 
-if (settings.uid == "FYa5nSQUY7cU3GnBGDrLn61fwsF3" || settings.uid == "sbfj3UM04VXjgZdHq4nALxQXsIh1"){
-    localStorage.setItem("admin", true)
-    alert("You are an admin! Press control+shift+e to see a prompt open. When you see it, type in 'admin' without the parenthesis. Your name and profile pic will change to being admin.")
-}
+
+// search for admins
+onValue(ref(db, `admins/`), (snapshot) => {
+    const val = snapshot.val()
+    console.log(val)
+    if (val !== null){ 
+        const allEmails = Object.values(val)
+        allEmails.forEach(email => {
+            if (email == settings.email){
+                console.log("is admin")
+                localStorage.setItem("admin", true)
+                document.getElementById("admin-help").style.display = "block"
+            }
+        })
+    } else {
+        return false
+    }
+}, {onlyOnce: true})
 
 window.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === 'E'){
         e.preventDefault()
         if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true){
             const user = window.prompt("which one?")
-            if (user == "school"){
-                settings.mathActivitiesprofilePic = "https://lh3.googleusercontent.com/ogw/AF2bZyj2dHMsDhnJ8g2qKbGUkFnXYcR6lH-VE-S1pR__gh3UTxY=s64-c-mo"
+            if (user == "normal"){
+                settings.displayName = localStorage.getItem("settings").displayName
+                settings.profilePic = localStorage.getItem("settings").profilePic
             } else if (user == "admin"){
                 settings.profilePic = "https://www.pngkey.com/png/full/263-2635979_admin-abuse.png"
                 settings.displayName = "Admin"
@@ -93,7 +107,29 @@ window.addEventListener("keydown", (e) => {
     }
     if (e.ctrlKey && e.shiftKey && e.key === 'H'){
         e.preventDefault()
-        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section:\nctrl + shift + e: switch to admin role.")
+        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section:\nctrl + shift + e: switch to admin role.\nType 'admin' for admin name and profile pic. Type 'normal' for ur normal profile pic and name.\n\n\nctrl + shift + a: add a new admin")
+    }
+    if (e.ctrlKey && e.shiftKey && e.key == "A"){
+        e.preventDefault()
+        if (localStorage.getItem("admin") == true || localStorage.getItem("admin") == "true"){
+            const addadmin = prompt("Type the email of the admin you want to add.")
+            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (pattern.test(addadmin)){
+                onValue(ref(db, `admins`), (snapshot) => {
+                    const val = snapshot.val()
+                    if (val == null){
+                        set(ref(db, `admins/0`), addadmin)
+                        alert(`${addadmin} is now an admin.`)
+                    } else {
+                        const valKeys = Object.keys(val)
+                        set(ref(db, `admins/${valKeys.length}`), addadmin)
+                        alert(`${addadmin} is now an admin.`)
+                    }
+                }, {onlyOnce: true})
+            } else {
+                alert("plz provide a complete and valid email.")
+            }
+        }
     }
 })
 
@@ -102,6 +138,16 @@ let previousOnline = null
 let onlineNum
 let partofmain = ""
 let isOnMain = ""
+
+function roomNameGenerator(){
+    const words = ["Funk", "Sigma", "Rizzler", "Apex", "Silly", "Gorilla", "Yass", "Slay", "Queen", "Rizzy", "Word", "Elephant", "Slow", "Sloth", "Monkey", "Black", "White", "Yellow", "Red", "T-rex", "Bob", "Boom"]
+    let word = ""
+    for (let i = 0; i < 3; i++){
+        const randomIndex = Math.floor(Math.random() * words.length);
+        word += words[randomIndex]
+    }
+    return word
+}
 
 function whichOne(id, main, part){
     let limit = 50
@@ -293,7 +339,7 @@ function whichOne(id, main, part){
             if (lastMessage[5] !== settings.uid){
                 sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], "")
             }
-            chatBox.scrollTop = chatBox.scrollHeight
+            chatBox.scrollTop = chatBox.scrollHeight + 10
             ////console.log("ok")
             document.getElementById("login").style.display = "none"
             document.getElementById("rooms").style.display = "none"
@@ -302,6 +348,10 @@ function whichOne(id, main, part){
         }
     })
 }
+
+document.addEventListener("scroll", () => {
+    console.log("scroll")
+})
 
 //join room
 const joinArea = document.getElementById("joinRoom")
@@ -343,7 +393,7 @@ joinButton.addEventListener("click", () => {
                 window.location.reload()
             }
             onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
-                const banList = Object.keys(snapshot.val())
+                const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
                 if (banList.includes(settings.uid)){
                     alert("you are banned from this chat")
                     window.location.reload()
@@ -369,6 +419,14 @@ joinButton.addEventListener("click", () => {
                 }, {onlyOnce: true})
             }
             document.getElementById("online").textContent = randomCode
+            onValue(ref(db, `chat/${randomCode}/nickname`), (snapshot) => {
+                const value = snapshot.val()
+                if (value == null){
+                    set(ref(db, `chat/${randomCode}/nickname`), roomNameGenerator())
+                } else {
+                    document.getElementById("roomName").value = value
+                }
+            })
             whichOne(document.getElementById("roomid").value, false, "")
             
         } else {
@@ -384,6 +442,10 @@ function back(){
 }
 
 document.getElementById("wow").addEventListener("click", back)
+
+document.getElementById("roomName").addEventListener("input", () => {
+    set(ref(db, `chat/${randomCode}/nickname`), document.getElementById("roomName").value)
+})
 
 // create room
 
@@ -423,6 +485,14 @@ createRoom.addEventListener("click", () => {
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
     document.getElementById("rooms").style.display = "none"
     document.getElementById("chatArea").style.display = "flex"
+    onValue(ref(db, `chat/${randomCode}/nickname`), (snapshot) => {
+        const value = snapshot.val()
+        if (value == null){
+            roomNameGenerator(`chat/${randomCode}`)
+        } else {
+            document.getElementById("roomName").value = value
+        }
+    })
     whichOne(randomCode, false, "")
     ////console.log("click")
 })
@@ -482,7 +552,7 @@ joinMainRoomButton.addEventListener("click", () => {
     document.getElementById("navbar").style.display = "flex"
     partofmain = "general"
     onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
-        const banList = Object.keys(snapshot.val())
+        const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
         if (banList.includes(settings.uid)){
             alert("you are banned from this chat")
             window.location.reload()
@@ -490,6 +560,7 @@ joinMainRoomButton.addEventListener("click", () => {
     }, {onlyOnce: true})
     whichOne(randomCode, true, "general")
     document.getElementById("rooms").style.display = "none"
+    document.getElementById("roomNameDiv").style.display = "none"
 })
 
 // different channels of the main channel
@@ -562,27 +633,45 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
         const valKeys = Object.keys(val)
         totalRooms = valKeys.length
         document.getElementById("niceone").innerHTML = ""
+        let allli = document.querySelectorAll(".easypickings")
         for (var i = 0; i < valKeys.length; i++){
             const newli = document.createElement("li")
-            newli.textContent = val[i]
-            document.getElementById("niceone").appendChild(newli)
-        }
-        const allli = document.querySelectorAll("#niceone li")
-            allli.forEach(li => {
-                li.addEventListener("click", () => {
-                    randomCode = li.textContent
-                    document.getElementById("online").textContent = randomCode
-                    onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
-                        const banList = Object.keys(snapshot.val())
-                        if (banList.includes(settings.uid)){
-                            alert("you are banned from this chat")
-                            window.location.reload()
-                        }
-                    }, {onlyOnce: true})
-                    whichOne(randomCode, false, "")
+            const easy = val[i]
+            onValue(ref(db, `chat/${val[i]}/nickname`), (snapshot) => {
+                const value = snapshot.val()
+                if (value == null){
+                    const vow =  roomNameGenerator()
+                    set(ref(db, `chat/${easy}/nickname`), vow)
+                    newli.textContent = vow
+                } else {
+                    newli.textContent = value
+                }
+                newli.id = easy
+                let colors = ["red", "rgb(0, 255, 0)", "orange", "rgb(9, 149, 243)", "rgb(220, 9, 243)", "rgb(243, 224, 9)", "rgb(255, 255, 255)", "rgb(158, 216, 255)", "rgb(9, 243, 149)"]
+                newli.style.color = colors[Math.floor(Math.random() * colors.length)];
+                newli.classList.add("easypickings")
+                document.getElementById("niceone").appendChild(newli)
+                allli = document.querySelectorAll("#niceone li")
+                allli.forEach(li => {
+                    //console.log(li.id)
+                    li.addEventListener("click", () => {
+                        //console.log("hi")
+                        randomCode = li.id
+                        document.getElementById("roomName").value = li.textContent
+                        document.getElementById("online").textContent = randomCode
+                        onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
+                            const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
+                            if (banList.includes(settings.uid)){
+                                alert("you are banned from this chat")
+                                window.location.reload()
+                            }
+                        }, {onlyOnce: true})
+                        whichOne(randomCode, false, "")
+                    })
                 })
+                console.log("f")
             })
-        
+        }
     }
 })
 
