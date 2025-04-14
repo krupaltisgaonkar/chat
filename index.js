@@ -133,7 +133,6 @@ window.addEventListener("keydown", (e) => {
     }
 })
 
-let previousRef = null
 let previousOnline = null
 let onlineNum
 let partofmain = ""
@@ -149,8 +148,12 @@ function roomNameGenerator(){
     return word
 }
 
+let previousRef = null
 function whichOne(id, main, part){
     let limit = 50
+    if (previousRef !== null){
+        off(previousRef)
+    }
     if (main){
         previousRef = query(ref(db, `chat/main/content/${part}`), limitToLast(limit))
     } else {
@@ -659,7 +662,7 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                         randomCode = li.id
                         document.getElementById("roomNameDiv").style.display = "flex"
                         const litextcontent = li.textContent
-                        document.getElementById("roomName").value = litextcontent.substring(0, litextcontent.length-6)
+                        document.getElementById("roomName").value = litextcontent.substring(0, litextcontent.length-7)
                         document.getElementById("online").textContent = randomCode
                         onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
                             const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
