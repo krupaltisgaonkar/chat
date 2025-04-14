@@ -426,7 +426,7 @@ joinButton.addEventListener("click", () => {
                 } else {
                     document.getElementById("roomName").value = value
                 }
-            })
+            }, {onlyOnce: true})
             whichOne(document.getElementById("roomid").value, false, "")
             
         } else {
@@ -642,12 +642,12 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                 if (value == null){
                     const vow =  roomNameGenerator()
                     set(ref(db, `chat/${easy}/nickname`), vow)
-                    newli.textContent = vow
+                    newli.textContent = vow + " " + "(" + easy + ")"
                 } else {
-                    newli.textContent = value
+                    newli.textContent = value + " " + "(" + easy + ")"
                 }
                 newli.id = easy
-                let colors = ["red", "rgb(0, 255, 0)", "orange", "rgb(9, 149, 243)", "rgb(220, 9, 243)", "rgb(243, 224, 9)", "rgb(255, 255, 255)", "rgb(158, 216, 255)", "rgb(9, 243, 149)"]
+                let colors = ["red", "rgb(0, 255, 0)", "orange", "rgb(9, 149, 243)", "rgb(220, 9, 243)", "rgb(243, 224, 9)", "rgb(255, 255, 255)", "rgb(158, 216, 255)", "rgb(9, 243, 149)", "rgb(133, 147, 255)", "rgb(249, 42, 118)", "rgb(244, 255, 118)", "rgb(197, 197, 197)", "rgb(173, 173, 173)", "rgb(181, 170, 240)", "rgb(186, 255, 130)"]
                 newli.style.color = colors[Math.floor(Math.random() * colors.length)];
                 newli.classList.add("easypickings")
                 document.getElementById("niceone").appendChild(newli)
@@ -658,7 +658,8 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                         //console.log("hi")
                         randomCode = li.id
                         document.getElementById("roomNameDiv").style.display = "flex"
-                        document.getElementById("roomName").value = li.textContent
+                        const litextcontent = li.textContent
+                        document.getElementById("roomName").value = litextcontent.substring(0, litextcontent.length-6)
                         document.getElementById("online").textContent = randomCode
                         onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
                             const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
