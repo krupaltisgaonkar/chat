@@ -17,6 +17,7 @@
 
 body {
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #chatBox {
@@ -301,10 +302,14 @@ body {
     outline:transparent;
     border: none;
     border-bottom: 3px solid white;
-    color: white;
+    background-size: 400%;
     font-size: 30px;
+    caret-color: white;
+    overflow-x: scroll;
+    color: white;
     width: 50%;
 }
+
 
 #wow {
     width: 15%;
@@ -367,25 +372,28 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
     width: 20%;
-    height:60vh;
+    height:30vh;
     left: 10px;
     border-radius: 30px;
-    color: white;
     padding: 10px;
+    color: white;
     border: rgb(255, 227, 202) 3px solid;
-    z-index: 1000000000000000000000000000000000000000000000000000;
+    z-index: 10;
 }
 
 #my-rooms ul {
     list-style: none;
     height: calc(100% - 50px);
     overflow-y: scroll;
+    overflow-x:visible;
+    overflow-wrap:break-word;
     padding: 10px;
 }
 
 #my-rooms ul li {
     cursor: pointer;
     color: rgb(0, 225, 0);
+    margin-top: 5px;
 }
 
 #my-rooms ul::-webkit-scrollbar-thumb {
@@ -405,6 +413,7 @@ body {
     z-index: 10000;
     font-family: monospace;
     bottom: 10px;
+    left: 77%;
 }
 
 a {
@@ -441,10 +450,7 @@ a {
     padding: none;
     margin-left: -20px;
     color: white;
-}
-
-#people-online ul li::marker {
-    color: #00ff00;
+    list-style: none;
 }
 #people-online ul::-webkit-scrollbar-thumb {
     background-color: rgb(125, 125, 125);
@@ -465,6 +471,404 @@ a {
     outline: none;
     border: #797979 3px solid;
     padding: 3px;
+}
+
+.hide {
+    display:none;
+}
+
+#user-info {
+    width: 200px;
+    height: 200px;
+    background-color: #303030;
+    position: absolute;
+    top: 0;
+    z-index: 10000000000000000000000000000000000000000000000000000000000000;
+    border-radius: 30px;
+    display: none;
+    flex-direction: column;
+    transition:0.3s all;
+    text-align: center;
+    color: white;
+}
+
+#user-info * {
+    width: inherit;
+}
+
+#user-info .top {
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#profile-background {
+    height: 80%;
+    background-color: #e64545;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#profile-pic {
+    width: 75px;
+    height: 75px;
+    background-color: #303030;
+    position: relative;
+    border-radius: 50%;
+    top: -60px;
+    left: 10px;
+    background-image: url("");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 75px;
+    border: 3px solid #303030;
+}
+
+#user-info .top, #user-info .bottom {
+    height: 50%;
+}
+
+#user-info .bottom button {
+    width: 90%;
+    border-radius: 10px;
+    padding: 3px;
+    background-color: #004554;
+    border: 3px solid #a5a5a5;
+    margin-top: 10px;
+    color: #c9c9c9;
+    cursor: pointer;
+}
+
+#unban {
+    background-color: #00607a;
+    cursor: pointer;
+    display: none;
+}
+
+#user-info .bottom button:hover {
+    background-color: #7d0000;
+    border: 3px solid #e2e2e2;
+    color: #ffc35d;
+}
+
+#vowwwwidk {
+    position: relative;
+    top: 0;
+    z-index: 10;
+    color: #fff;
+    background-color: #000000d1;
+}
+
+#my-profile {
+    height: 50vh;
+    background-color: #303030;
+    width: 20%;
+    position: absolute;
+    bottom: 60px;
+    z-index: 10000000000000000000;
+    left: 10px;
+    flex-direction: column;
+    display: none;
+    color: white;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#my-profile .top, #my-profile .bottom {
+    height: 50%;
+}
+
+#my-profile .bottom {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#friending-url {
+    background-color: #0d5d85;
+    display: flex;
+}
+
+#my-profile-background {
+    height: 80%;
+    background-color: rgb(255, 0, 0);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#my-profile-pic {
+    width: 75px;
+    height: 75px;
+    background-color: #303030;
+    position: relative;
+    border-radius: 50%;
+    top: -65px;
+    left: 10px;
+    background-image: url("icon.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 75px;
+    border: 3px solid #303030;
+}
+
+#link {
+    width: 200px;
+    padding: 2px;
+    height: 30px;
+    font-size: 15px;
+    overflow-y: scroll;
+    display: flex;
+    overflow-wrap:break-word;
+}
+
+#link::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#my-profile .copy {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    position: relative;
+    top: 10px;
+    left: 10px;
+}
+
+#my-profile-nickname {
+    position: absolute;
+    left: 5%;
+    top: 40%;
+    width: 50%;
+    border: none;
+    color: white;
+    font-size: 20px;
+    outline: none;
+    background-color: transparent;
+    padding: 3px;
+}
+
+#my-profile-nickname::placeholder{
+    color: #c8c8c8;
+}
+
+#my-profile-nickname:focus {
+    border-bottom: solid white 3px;
+}
+
+#my-profile-displayname {
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    padding: 3px;
+    font-size: 16px;
+    color: #e8e8e8;
+}
+
+#sign-out {
+    width: 50%;
+    border-radius: 15px;
+    height: 30%;
+    cursor: pointer;
+    font-size: 15px;
+    outline: none;
+    border: black solid 5px;
+    transition: 0.5s all;
+    position: relative;
+    left: 50%;
+    top: 10%;
+}
+
+#sign-out:hover {
+    background-color: #218fc1;
+    color: white;
+}
+
+#my-profile-tab {
+    position: relative;
+    width: calc(20% - 6px);
+    height: 40px;
+    background-image: url("https://lh3.googleusercontent.com/a/ACg8ocIPzjw7wK58cWxDEYKoUpiteCiXRfWRJqbekGu6Go1CYJW9oeQq=s96-c");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 10px;
+    z-index: 1000;
+    cursor: pointer;
+    font-size: 25px;
+    border-radius: 10px;
+    background-color: black;
+    text-align: center;
+    border: 3px solid white;
+}
+
+#my-profile-tab::before {
+    content: "";
+    color: white;
+    filter: blur(0);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.603);
+}
+
+#my-profile-tab span {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    backdrop-filter: blur(3px);
+    color: white;
+}
+
+#my-profile .close {
+    position: relative;
+    top: -142%;
+    left: calc(100% - 30px);
+    font-family: monospace;
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+    height: 30px;
+    background-color: #00000086;
+    border-top-right-radius: 30px;
+    cursor: pointer;
+}
+
+#my-friends-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    width: 20%;
+    height:30vh;
+    left: 10px;
+    top: 50vh;
+    border-radius: 30px;
+    padding: 10px;
+    color: white;
+    border: rgb(255, 227, 202) 3px solid;
+    z-index: 10;
+}
+
+#my-friends-container ul {
+    list-style: none;
+    height: calc(100% - 50px);
+    overflow-y: scroll;
+    overflow-x:visible;
+    overflow-wrap:break-word;
+    padding: 10px;
+}
+
+#my-friends-container ul li {
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+    margin-top: 5px;
+}
+
+#my-friends-container ul::-webkit-scrollbar-thumb {
+    background-color: rgb(125, 125, 125);
+    border: 4px solid transparent;
+    border-radius: 8px;
+    background-clip: padding-box;  
+}
+#my-friends-container ul::-webkit-scrollbar {
+    width: 14px;
+}
+
+#my-friend-requests-tab {
+    width: calc(20% - 6px);
+    height: 40px;
+    position: absolute;
+    top: 3px;
+    background-color: #000000;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    left: 10px;
+    z-index: 10;
+    border: solid 3px white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#my-friend-requests-tab:hover {
+    background-color: #323232;
+}
+
+#my-friend-requests-container {
+    width: calc(20% - 20px);
+    height: 30vh;
+    background-color: #13272c;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    z-index: 1000;
+    border: 3px solid white;
+    color: white;
+    padding: 10px;
+    border-radius: 20px;
+    display: none;
+}
+
+#my-friend-requests img {
+    width: 30px;
+    height: 30px;
+}
+
+#my-friend-requests {
+    display: flex;
+    flex-direction: column;
+}
+
+#my-friend-requests .my-friend-requests-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#my-friend-requests .my-friend-requests-container .accept, .decline {
+    cursor: pointer;
+}
+
+#my-friend-requests-container .close {
+    position: relative;
+    top: 0;
+    left: calc(100% - 10px);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#my-friends li img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+#my-friends li {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+#nic {
+    position: absolute;
+    left: 80%;
+    top: 82%;
+    z-index: 10;
+    color: white;
+    display: none;
 }
 
 @media only screen and (max-width: 560px) {

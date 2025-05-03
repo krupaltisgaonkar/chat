@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js"; import { getDatabase, ref, set, onValue, get, off, child, update, limitToLast, query, remove, onDisconnect} from "https://www.gstatic.com/firebasejs/9.0.1/firebase-database.js"; import { getAuth, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo  } from "https://www.gstatic.com/firebasejs/9.0.1/firebase-auth.js";
 
-
 const firebaseConfig = {
     apiKey: "AIzaSyAMfW_Qc7q1rlM-KJYKbUbc_zUqtZ24qNw",
     authDomain: "chat-d70bd.firebaseapp.com",
@@ -24,6 +23,9 @@ function setup(){
     document.getElementById("chatArea").style.visibility = "hidden"
     document.getElementById("my-rooms").style.display = "none"
     document.getElementById("rooms").style.display = "none"
+    document.getElementById("my-profile-tab").style.display = "none"
+    document.getElementById("my-friend-requests-tab").style.display = "none"
+    document.getElementById("my-friends-container").style.display = "none"
     document.getElementById("login").innerHTML = `
         <div id="sign-in">
             <button id = "signin">Sign in with google</button>
@@ -42,15 +44,18 @@ function setup(){
             profilePic: user.photoURL,
             displayName: user.displayName,
             uid:user.uid,
-            email: user.email
+            email: user.email,
         }
         settings = {}
         settings = userSettings
         localStorage.setItem("settings", JSON.stringify(userSettings))
         document.getElementById("login").style.display = "none"
+        document.getElementById("my-friends-container").style.display = "flex"
+        document.getElementById("my-friend-requests-tab").style.display = "flex"
         document.getElementById("rooms").style.display = "flex"
         document.getElementById("my-rooms").style.display = "block"
         document.getElementById("chatArea").style.visibility = "hidden"
+        document.getElementById("my-profile-tab").style.display = "flex"
         window.location.reload()
     }
     signin.addEventListener("click", login)
@@ -62,15 +67,111 @@ try {
         alert("This application is out of date. We will reload the page and you will have to sign in again.")
         window.location.reload()
     }
+    set(ref(db, `users/${settings.uid}/displayName/`), settings.displayName)
+    set(ref(db, `users/${settings.uid}/profilePic`), settings.profilePic)
+    set(ref(db, `users/${settings.uid}/email`), settings.email)
 } catch {
     setup()
 }
 let index = 0
+async function setUpUserProfile (){
+    // set my profile
+    const profilePic = settings.profilePic
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.referrerPolicy = "no-referrer"
+    img.src = profilePic;
+    // The magic begins after the image is successfully loaded
+    img.onload = async function () {
+        console.log("eee")
+        var canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+                
+        canvas.height = img.naturalHeight;
+        canvas.width = img.naturalWidth;
+        ctx.drawImage(img, 0, 0);
+                
+        // Unfortunately, we cannot keep the original image type, so all images will be converted to PNG
+        // For this reason, we cannot get the original Base64 string
+        var uri = canvas.toDataURL('image/jpg'),
+        b64 = uri.replace(/^data:image\/jpg;base64,/, "");
+        document.getElementById("my-profile-pic").style.backgroundImage = `url(${b64})`
+        document.getElementById("my-profile-tab").style.backgroundImage = `url(${b64})`
 
-set(ref(db, `users/${settings.uid}/displayName/`), settings.displayName)
-set(ref(db, `users/${settings.uid}/profilePic`), settings.profilePic)
-set(ref(db, `users/${settings.uid}/email`), settings.email)
+        var blockSize = 5, // only visit every 5 pixels
+        defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+        canvas = document.createElement('canvas'),
+        context = canvas.getContext && canvas.getContext('2d'),
+        data, width, height,
+        i = -4,
+        length,
+        rgb = {r:0,g:0,b:0},
+        count = 0;
+        if (!context) {
+            return defaultRGB;
+        }
 
+        height = canvas.height = img.naturalHeight || img.offsetHeight || img.height;
+        width = canvas.width = img.naturalWidth || img.offsetWidth || img.width;
+
+        context.drawImage(img, 0, 0);
+
+        try {
+                data = context.getImageData(0, 0, width, height);
+        } catch(e) {
+            /* security error, img on diff domain */
+            return defaultRGB;
+        }
+
+        length = data.data.length;
+
+        while ( (i += blockSize * 4) < length ) {
+            ++count;
+            rgb.r += data.data[i];
+            rgb.g += data.data[i+1];
+            rgb.b += data.data[i+2];
+        }
+
+        // ~~ used to floor values
+        rgb.r = ~~(rgb.r/count);
+        rgb.g = ~~(rgb.g/count);
+        rgb.b = ~~(rgb.b/count);
+        console.log(rgb)
+        let dominantColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+        /* const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+        const colorCounts = {};
+        for (let i = 0; i < imageData.length; i += 4) {
+            const r = imageData[i];
+            const g = imageData[i + 1];
+            const b = imageData[i + 2];
+            const color = `rgb(${r},${g},${b})`;
+            colorCounts[color] = (colorCounts[color] || 0) + 1;
+        }
+        let dominantColor;
+        let maxCount = 100;
+        console.log(colorCounts)
+        for (const color in colorCounts) {
+        if (colorCounts[color] > maxCount) {
+            maxCount = colorCounts[color];
+            console.log(maxCount)
+            dominantColor = color;
+        }*/
+        document.getElementById("my-profile-background").style.backgroundColor = dominantColor
+    }
+    // set my profile name
+    const displayName = await get(ref(db, `users/${settings.uid}/displayName`))
+    console.log(displayName.val())
+    document.getElementById("my-profile-displayname").textContent = displayName.val()
+    const nickname = await get(ref(db, `users/${settings.uid}/nickname`))
+    if (nickname.val() == null){
+        
+    } else {
+        document.getElementById("my-profile-nickname").value = nickname.val()
+    }
+    document.getElementById("link").textContent = `https://krupaltisgaonkar.github.io/chat/?addFriend=${btoa(settings.uid)}`
+    
+}
+setUpUserProfile()
 
 // search for admins
 onValue(ref(db, `admins/`), (snapshot) => {
@@ -107,7 +208,7 @@ window.addEventListener("keydown", (e) => {
     }
     if (e.ctrlKey && e.shiftKey && e.key === 'H'){
         e.preventDefault()
-        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section:\nctrl + shift + e: switch to admin role.\nType 'admin' for admin name and profile pic. Type 'normal' for ur normal profile pic and name.\n\n\nctrl + shift + a: add a new admin")
+        if (localStorage.getItem("admin") == "true" || localStorage.getItem("admin") == true) alert("Admin help section:\nctrl + shift + e: switch to admin role.\nType 'admin' for admin name and profile pic. Type 'normal' for ur normal profile pic and name.\n\n\nctrl + shift + a: add a new admin\n\nctrl + shift + v: view all the rooms.")
     }
     if (e.ctrlKey && e.shiftKey && e.key == "A"){
         e.preventDefault()
@@ -131,6 +232,29 @@ window.addEventListener("keydown", (e) => {
             }
         }
     }
+    if (e.ctrlKey && e.shiftKey && e.key == "V"){
+        e.preventDefault()
+        if (localStorage.getItem("admin") == true || localStorage.getItem("admin") == "true"){
+            onValue(ref(db, "rooms"), (snapshot) => {
+                const all = Object.values(snapshot.val())
+                let pages = Math.floor(all.length/21)
+                let rem = all.length % 20
+                console.log("pages", pages, " ", "rem", rem)
+                if (rem > 0) pages++
+                let items = ""
+                all.forEach(item => {
+                    items += item + "\n"
+                })
+                for (var i = 1; i <= pages; i++){
+                    let vow
+                    if (rem > 0) vow = pages; else vow = 20
+                    alert(`Page ${i} of showing ${vow} rooms` + items)
+                }
+                
+            }, {onlyOnce: true})
+        }
+        
+    }
 })
 
 let previousOnline = null
@@ -139,7 +263,7 @@ let partofmain = ""
 let isOnMain = ""
 
 function roomNameGenerator(){
-    const words = ["Funk", "Sigma", "Rizzler", "Apex", "Silly", "Gorilla", "Yass", "Slay", "Queen", "Rizzy", "Word", "Elephant", "Slow", "Sloth", "Monkey", "Black", "White", "Yellow", "Red", "T-rex", "Bob", "Boom"]
+    const words = ["Funk", "Sigma", "Rizzler", "Apex", "Silly", "Gorilla", "Yass", "Slay", "Queen", "Rizzy", "Word", "Elephant", "Slow", "Sloth", "Monkey", "Black", "White", "Yellow", "Red", "T-rex", "Bob", "Boom", "Gooner", "Ohio", "Gyatt", "Run", "Walk", "Jog", "Trot", "Peculiar", "Gag", "Gagging", "Sleeping", "Snoring", "Easy", "Pickings", "Trigger", "Negotiater", "Liar", "River", "Cow", "LIGMA", "b@115", "WASTER", "Garbage", "Port", "Ship", "Slimy", "Sticky", "Liquidy", "slowy", "MOMMMMMMMMY"]
     let word = ""
     for (let i = 0; i < 3; i++){
         const randomIndex = Math.floor(Math.random() * words.length);
@@ -148,16 +272,320 @@ function roomNameGenerator(){
     return word
 }
 
+// search for members
+
+document.getElementById("search-people").addEventListener("input", () => {
+    const allLi = document.querySelectorAll("#people-online ul li")
+    allLi.forEach(li => {
+        if (!li.textContent.toLocaleLowerCase().includes(document.getElementById("search-people").value)){
+            li.classList.add("hide")
+        } else {
+            li.classList.remove("hide")
+        }
+    })
+})
+
+let previousBannedRef = null
+async function checkBannedPeople(id){
+    console.log("1")
+    const bannedRef = `chat/${id}/ban`
+    if (previousBannedRef !== null){
+        off(previousBannedRef)
+    }
+    previousBannedRef = ref(db, `chat/${id}/ban`)
+    onValue(previousBannedRef, async function(snapshot){
+        const banned = snapshot
+        if (banned.val() == null) {
+            document.getElementById("banned").innerHTML = ""
+            const li = document.createElement("li")
+            li.textContent = "Nobody is banned here 😀"
+            document.getElementById("banned").appendChild(li)
+        } else {
+            document.getElementById("banned").innerHTML = ""
+            const valkeys = Object.keys(banned.val())
+            console.log(valkeys.length)
+            for(var i = 0; i < valkeys.length; i++){
+                // this prints: console.log(i)
+                const valKey = valkeys[i]
+                const userDisplayName = await get(ref(db, `users/${valKey}/displayName`))
+                // anything in here doesn't print or run
+                const li = document.createElement("li")
+                li.textContent = userDisplayName.val()
+                li.style.cursor = "pointer"
+                li.classList.add("banned")
+                li.id = `banned-${valKey}`
+                li.dataset.userId = valKey
+                const userInfo = document.getElementById("user-info")
+                li.addEventListener("click", async function(e){
+                    console.log(userInfo.style.width)
+                    userInfo.style.top = e.clientY -100 +"px"
+                    const userNickname = await get(ref(db, `users/${valKey}/nickname`))
+                    if (userNickname.val() !== null){
+                        document.getElementById("vowwwwidk").textContent = `${userNickname.val()} (${li.textContent})`
+                    } else {
+                        document.getElementById('vowwwwidk').textContent = li.textContent
+                    }
+    
+                    if (localStorage.getItem("admin") == true || localStorage.getItem("admin") == "true"){
+                        document.getElementById("unban").style.display = "block"
+                    }
+                    
+                    const unban = document.getElementById("unban")
+                    unban.addEventListener("click", function(){
+                        const uid = li.id.split("-")[1]
+                        const unbanConfirm = confirm("Unban this person from this chat")
+                        if (unbanConfirm){
+                            remove(ref(db, bannedRef + "/" + uid))
+                        }
+                    })
+                    const friendRequestBtn = document.getElementById("profile-add-friend")
+                    const clone = friendRequestBtn.cloneNode(true)
+                    friendRequestBtn.replaceWith(clone)
+                    clone.addEventListener("click", () => {
+                        sendFriendRequest(li.id.split("-")[1], false)
+                    })
+                    userInfo.style.left = li.getBoundingClientRect().left - 200 + "px"
+                    document.getElementById("profile-add-friend").style.display = "flex"
+                    userInfo.style.display = "flex"
+                    const userProfilePic = await get(ref(db, `users/${valKey}/profilePic`))
+                    var img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.src = userProfilePic.val();
+                    img.referrerPolicy = "no-referrer"
+                    // The magic begins after the image is successfully loaded
+                    img.onload = function () {
+                        console.log("eee")
+                        var canvas = document.createElement('canvas'),
+                            ctx = canvas.getContext('2d');
+                    
+                        canvas.height = img.naturalHeight;
+                        canvas.width = img.naturalWidth;
+                        ctx.drawImage(img, 0, 0);
+                    
+                        // Unfortunately, we cannot keep the original image type, so all images will be converted to PNG
+                        // For this reason, we cannot get the original Base64 string
+                        var uri = canvas.toDataURL('image/jpg'),
+                        b64 = uri.replace(/^data:image\/jpg;base64,/, "");
+                    
+                        document.getElementById("profile-pic").style.backgroundImage = `url("${b64}")`
+                        var blockSize = 5, // only visit every 5 pixels
+                        defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+                        canvas = document.createElement('canvas'),
+                        context = canvas.getContext && canvas.getContext('2d'),
+                        data, width, height,
+                        i = -4,
+                        length,
+                        rgb = {r:0,g:0,b:0},
+                        count = 0;
+    
+                        if (!context) {
+                            return defaultRGB;
+                        }
+    
+                        height = canvas.height = img.naturalHeight || img.offsetHeight || img.height;
+                        width = canvas.width = img.naturalWidth || img.offsetWidth || img.width;
+    
+                        context.drawImage(img, 0, 0);
+    
+                        try {
+                            data = context.getImageData(0, 0, width, height);
+                        } catch(e) {
+                            /* security error, img on diff domain */
+                            return defaultRGB;
+                        }
+    
+                        length = data.data.length;
+    
+                        while ( (i += blockSize * 4) < length ) {
+                            ++count;
+                            rgb.r += data.data[i];
+                            rgb.g += data.data[i+1];
+                            rgb.b += data.data[i+2];
+                        }
+    
+                        // ~~ used to floor values
+                        rgb.r = ~~(rgb.r/count);
+                        rgb.g = ~~(rgb.g/count);
+                        rgb.b = ~~(rgb.b/count);
+                        console.log(rgb)
+                        let dominantColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+                       /* const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+                        const colorCounts = {};
+                        for (let i = 0; i < imageData.length; i += 4) {
+                            const r = imageData[i];
+                            const g = imageData[i + 1];
+                            const b = imageData[i + 2];
+                            const color = `rgb(${r},${g},${b})`;
+                            colorCounts[color] = (colorCounts[color] || 0) + 1;
+                        }
+                        let dominantColor;
+                        let maxCount = 100;
+                        console.log(colorCounts)
+                        for (const color in colorCounts) {
+                            console.log("Color:", color, "  ColorCounts[color]", colorCounts[color])
+                            if (colorCounts[color] > maxCount) {
+                                maxCount = colorCounts[color];
+                                console.log(maxCount)
+                                dominantColor = color;
+                            }
+                        } */
+                        document.getElementById("profile-background").style.backgroundColor = dominantColor
+                    }
+                })
+                console.log(li)
+                document.getElementById("banned").appendChild(li)
+            }
+                
+        }
+    })
+}
+
+let previousMemberRef = null
+
+async function checkMembers(id){
+    console.log("1")
+    const memberRef = `chat/${id}/members`
+    if (previousMemberRef !== null){
+        off(previousMemberRef)
+    }
+    previousMemberRef = ref(db, `chat/${id}/members`)
+    onValue(previousMemberRef, async function(snapshot){
+        const members = snapshot
+        if (members.val() == null) {
+            document.getElementById("members").innerHTML = ""
+            const li = document.createElement("li")
+            li.textContent = "Nobody is here"
+            document.getElementById("members").appendChild(li)
+        } else {
+            document.getElementById("members").innerHTML = ""
+            const valkeys = Object.keys(members.val())
+            console.log(valkeys.length)
+            for(var i = 0; i < valkeys.length; i++){
+                // this prints: console.log(i)
+                const valKey = valkeys[i]
+                const userDisplayName = await get(ref(db, `users/${valKey}/displayName`))
+                // anything in here doesn't print or run
+                const li = document.createElement("li")
+                li.textContent = userDisplayName.val()
+                li.style.cursor = "pointer"
+                li.classList.add("member")
+                li.id = `member-${valKey}`
+                li.dataset.userId = valKey
+                const userInfo = document.getElementById("user-info")
+                li.addEventListener("click", async function(e){
+                    console.log(userInfo.style.width)
+                    userInfo.style.top = e.clientY -100 +"px"
+                    const userNickname = await get(ref(db, `users/${valKey}/nickname`))
+                    if (userNickname.val() !== null){
+                        document.getElementById("vowwwwidk").textContent = `${userNickname.val()} (${li.textContent})`
+                    } else {
+                        document.getElementById('vowwwwidk').textContent = li.textContent
+                    }
+                    userInfo.style.left = li.getBoundingClientRect().left - 200 + "px"
+                    userInfo.style.display = "flex"
+                    const friendRequestBtn = document.getElementById("profile-add-friend")
+                    const clone = friendRequestBtn.cloneNode(true)
+                    friendRequestBtn.replaceWith(clone)
+                    clone.addEventListener("click", () => {
+                        sendFriendRequest(li.id.split("-")[1], false)
+                    })
+                    const userProfilePic = await get(ref(db, `users/${valKey}/profilePic`))
+                    document.getElementById("unban").style.display = "none"
+                    if (settings.uid == li.id.split("-")[1]){
+                        document.getElementById("profile-add-friend").style.display = "none"
+                    } else {
+                        document.getElementById("profile-add-friend").style.display = "block"
+                    }
+                    var img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.src = userProfilePic.val();
+                    img.referrerPolicy = "no-referrer"
+                    // The magic begins after the image is successfully loaded
+                    img.onload = function () {
+                        console.log("eee")
+                        var canvas = document.createElement('canvas'),
+                            ctx = canvas.getContext('2d');
+                    
+                        canvas.height = img.naturalHeight;
+                        canvas.width = img.naturalWidth;
+                        ctx.drawImage(img, 0, 0);
+                    
+                        // Unfortunately, we cannot keep the original image type, so all images will be converted to PNG
+                        // For this reason, we cannot get the original Base64 string
+                        var uri = canvas.toDataURL('image/jpg'),
+                        b64 = uri.replace(/^data:image\/jpg;base64,/, "");
+                    
+                        document.getElementById("profile-pic").style.backgroundImage = `url("${b64}")`
+                        var blockSize = 5, // only visit every 5 pixels
+                        defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+                        canvas = document.createElement('canvas'),
+                        context = canvas.getContext && canvas.getContext('2d'),
+                        data, width, height,
+                        i = -4,
+                        length,
+                        rgb = {r:0,g:0,b:0},
+                        count = 0;
+    
+                        if (!context) {
+                            return defaultRGB;
+                        }
+    
+                        height = canvas.height = img.naturalHeight || img.offsetHeight || img.height;
+                        width = canvas.width = img.naturalWidth || img.offsetWidth || img.width;
+    
+                        context.drawImage(img, 0, 0);
+    
+                        try {
+                            data = context.getImageData(0, 0, width, height);
+                        } catch(e) {
+                            /* security error, img on diff domain */
+                            return defaultRGB;
+                        }
+    
+                        length = data.data.length;
+    
+                        while ( (i += blockSize * 4) < length ) {
+                            ++count;
+                            rgb.r += data.data[i];
+                            rgb.g += data.data[i+1];
+                            rgb.b += data.data[i+2];
+                        }
+    
+                        // ~~ used to floor values
+                        rgb.r = ~~(rgb.r/count);
+                        rgb.g = ~~(rgb.g/count);
+                        rgb.b = ~~(rgb.b/count);
+                        console.log(rgb)
+                        let dominantColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+                        document.getElementById("profile-background").style.backgroundColor = dominantColor
+                    }
+                })
+                console.log(li)
+                document.getElementById("members").appendChild(li)
+            }
+                
+        }
+    })
+}
+
 let previousRef = null
-function whichOne(id, main, part){
+async function whichOne(id, main, part){
     let limit = 50
+    document.getElementById("nic").style.display = "block"
+    document.getElementById("roomNameDiv").style.display = "flex"
+    document.getElementById("people").style.display = "flex"
+    await checkBannedPeople(id)
+    await checkMembers(id)
+    set(ref(db, `chat/${id}/members/${settings.uid}`), true)
     if (previousRef !== null){
         off(previousRef)
     }
     if (main){
         previousRef = query(ref(db, `chat/main/content/${part}`), limitToLast(limit))
+        document.getElementById("nic").style.display = "none"
     } else {
         previousRef = query(ref(db, `chat/${id}/content`), limitToLast(limit))
+        document.getElementById("nic").style.display = "block"
     }
     let location
     if (main){
@@ -169,28 +597,52 @@ function whichOne(id, main, part){
         previousOnline = `chat/${id}/online`
     }
 
+    document.getElementById("people-online").style.display = "flex"
+    // making chat private
+    const privateBtn = document.getElementById("status-of-chat")
+    const status = await get(ref(db, `chat/${id}/private`))
+    if (status == null || status == false){
+        privateBtn.checked = true
+    } else if(status) {
+        privateBtn.checked = false
+    }
+    privateBtn.addEventListener("change", async function(){
+        if (privateBtn.checked == true){
+            await set(ref(db, `chat/${id}/private`), true)
+            alert("this chat is now not available to join")
+        } else if(privateBtn.checked == false){
+            await set(ref(db, `chat/${id}/private`), false)
+            alert("this chat is now available to join")
+        }
+    })
+
+    // showing banned people
+
     // put messages
-    onValue(location, (snapshot) => {
+    onValue(location, async function(snapshot){
         const val = snapshot.val()
         
         if (val == null){
             if (main){
                 set(ref(db, "chat/main/content/" + part), "")
             } else {
+                // seeing if the room doesn't exist or doesn't have any content, then create the room
                 set(ref(db, "chat/" + id + "/content"), "")
-                onValue(ref(db, "rooms/"), (snapshot) => {
-                    const val = snapshot.val()
-                    const all = Object.values(val)
-                    let found = false
-                    for (var i = 0; i < all.length; i++){
-                        if (all[i] == id){
-                            found = true
-                        }   
-                    }
-                    if (!found){
-                        set(ref(db, `rooms/${all.length}`), id)
-                    }
-                }, {onlyOnce: true})
+                if (id.length !== 50){
+                    onValue(ref(db, "rooms/"), (snapshot) => {
+                        const val = snapshot.val()
+                        const all = Object.values(val)
+                        let found = false
+                        for (var i = 0; i < all.length; i++){
+                            if (all[i] == id){
+                                found = true
+                            }   
+                        }
+                        if (!found){
+                            set(ref(db, `rooms/${all.length}`), id)
+                        }
+                    }, {onlyOnce: true})
+                }
             }
         }
         const chatBox = document.getElementById("chatBox")
@@ -205,9 +657,13 @@ function whichOne(id, main, part){
             index = parseFloat(Object.keys(val).slice(-1)[0]) + 1
             const messages = Object.entries(val)
             const messageKey = Object.keys(val)
+            const allProfilePics = []
+            let hehe = []
+            console.log(messages)
             //console.log(messages)
             for (let i = 0; i < messages.length; i++){
                 const valArray = messages[i][1]
+                let listener
                 //console.log(index)
                 const outer = document.createElement("div")
                 outer.classList.add("message")
@@ -219,6 +675,7 @@ function whichOne(id, main, part){
                 //referrerPolicy="no-referrer"
                 innerPic.referrerPolicy = "no-referrer"
                 const displayName = document.createElement("span")
+                const date1 = new Date().getMilliseconds()
                 displayName.innerHTML = valArray[3]
                 displayName.classList.add("displayName")
                 const date = document.createElement("div")
@@ -261,6 +718,11 @@ function whichOne(id, main, part){
                 outer.appendChild(date)
                 outer.appendChild(message)
             }
+            let add = 0
+            for (let b = 0; b < hehe.length; b++){
+                add += hehe[b]
+            }
+            console.log(add/hehe.length)
             const lastMessage = Object.entries(val)[Object.keys(val).length - 1][1]
             if (localStorage.getItem("admin")){
                 const edits = document.querySelectorAll(".admin-options .edit")
@@ -342,7 +804,10 @@ function whichOne(id, main, part){
             if (lastMessage[5] !== settings.uid){
                 sendNotification(lastMessage[0], main ? `main/${part}`: `${id}`, lastMessage[3], "")
             }
-            chatBox.scrollTop = chatBox.scrollHeight + 10
+            chatBox.scrollTo({
+                top: chatBox.scrollHeight,
+                behavior: 'smooth'
+            });
             ////console.log("ok")
             document.getElementById("login").style.display = "none"
             document.getElementById("rooms").style.display = "none"
@@ -375,8 +840,8 @@ joinRoom.addEventListener("click", () => {
 
 
 
-joinButton.addEventListener("click", () => {
-    onValue(ref(db, "rooms/"), (snapshot) => {
+joinButton.addEventListener("click", async () => {
+    onValue(ref(db, "rooms/"), async (snapshot) => {
         const val = snapshot.val()
         const keys = val
         let found = false
@@ -391,6 +856,12 @@ joinButton.addEventListener("click", () => {
         }
         //console.log("ee")
         if (found){
+            const privateStatus = await get(ref(db, `chat/${randomCode}/private`))
+            if (privateStatus.val() == true){
+                alert("this chat is not open to other users")
+                window.location.reload()
+                return false
+            }
             document.getElementById("rooms").style.display = "none"
             if (randomCode == "main"){
                 window.location.reload()
@@ -446,7 +917,7 @@ function back(){
 
 document.getElementById("wow").addEventListener("click", back)
 
-document.getElementById("roomName").addEventListener("input", () => {
+document.getElementById("roomName").addEventListener("focusout", () => {
     set(ref(db, `chat/${randomCode}/nickname`), document.getElementById("roomName").value)
 })
 
@@ -486,6 +957,7 @@ createRoom.addEventListener("click", () => {
         //console.log(totalnomRooms.length)
     }, {onlyOnce: true})
     set(ref(db, `users/${settings.uid}/rooms/${stuff}`), randomCode)
+    set(ref(db, `chat/${randomCode}/creator`), settings.uid)
     document.getElementById("rooms").style.display = "none"
     document.getElementById("chatArea").style.display = "flex"
     onValue(ref(db, `chat/${randomCode}/nickname`), (snapshot) => {
@@ -542,7 +1014,7 @@ function writeData(id, text, sendingAttachment, main, part){
         }
         message.value = ""
         //console.log(index)
-        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.displayName,  sendingAttachment, settings.uid, settings.profilePic]
+        const send = [text, `${new Date().toLocaleDateString('en-US', {month:"long", day:"numeric", year:"numeric"})} at ${new Date().toLocaleTimeString()}`, "", settings.nickname == null ? settings.displayName : settings.nickname,  sendingAttachment, settings.uid, settings.profilePic]
         set(location, send)
     }
 }
@@ -622,10 +1094,6 @@ window.setInterval(function(){
     }
 })
 
-window.onload = function (){
- //   alert("rooms will be deleted everyday")
-}
-
 // saved rooms
 
 onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
@@ -653,32 +1121,234 @@ onValue(ref(db, `users/${settings.uid}/rooms`), (snapshot) => {
                 let colors = ["red", "rgb(0, 255, 0)", "orange", "rgb(9, 149, 243)", "rgb(220, 9, 243)", "rgb(243, 224, 9)", "rgb(255, 255, 255)", "rgb(158, 216, 255)", "rgb(9, 243, 149)", "rgb(133, 147, 255)", "rgb(249, 42, 118)", "rgb(244, 255, 118)", "rgb(197, 197, 197)", "rgb(173, 173, 173)", "rgb(181, 170, 240)", "rgb(186, 255, 130)"]
                 newli.style.color = colors[Math.floor(Math.random() * colors.length)];
                 newli.classList.add("easypickings")
-                document.getElementById("niceone").appendChild(newli)
-                allli = document.querySelectorAll("#niceone li")
-                allli.forEach(li => {
-                    //console.log(li.id)
-                    li.addEventListener("click", () => {
-                        //console.log("hi")
-                        randomCode = li.id
-                        document.getElementById("roomNameDiv").style.display = "flex"
-                        const litextcontent = li.textContent
-                        document.getElementById("roomName").value = litextcontent.substring(0, litextcontent.length-7)
-                        document.getElementById("online").textContent = randomCode
-                        onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
-                            const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
-                            if (banList.includes(settings.uid)){
-                                alert("you are banned from this chat")
-                                window.location.reload()
-                            }
-                        }, {onlyOnce: true})
-                        whichOne(randomCode, false, "")
-                    })
+                newli.addEventListener("click", () => {
+                    //console.log("hi")
+                    randomCode = newli.id
+                    document.getElementById("roomNameDiv").style.display = "flex"
+                    const litextcontent = newli.textContent
+                    document.getElementById("roomName").value = litextcontent.substring(0, litextcontent.length-7)
+                    document.getElementById("online").textContent = randomCode
+                    onValue(ref(db, `chat/${randomCode}/ban`), (snapshot) => {
+                        const banList = snapshot.val() == null ? "" : Object.keys(snapshot.val())
+                        if (banList.includes(settings.uid)){
+                            alert("you are banned from this chat")
+                            window.location.reload()
+                        }
+                    }, {onlyOnce: true})
+                    whichOne(randomCode, false, "")
                 })
+                document.getElementById("niceone").appendChild(newli)
                 console.log("f")
             })
         }
     }
 })
+// profiles
+const userInfo = document.getElementById("user-info")
+document.addEventListener("click", () => {
+    document.onclick = function(e){
+        if(e.target.id !== 'user-info' && e.target.id.split("-")[0] !== "banned" && e.target.id !== "profile-background" && e.target.id !== "profile-status" && e.target.id !== "profile-pic" && e.target.id !== "profile-add-friend" && e.target.id !== "vowwwwidk" && e.target.id.split("-")[0] !== "member"){
+            setTimeout(() => {
+                userInfo.style.height = "0px"
+                userInfo.style.width = "0px"
+                setTimeout(() => {
+                    userInfo.style.display = "none"
+                    userInfo.style.height = "200px"
+                    userInfo.style.width = "200px"
+                }, 300)
+                
+            }, 0)
+        }
+    }
+})
+
+// my-profile
+const myProfileTab = document.getElementById("my-profile-tab")
+myProfileTab.addEventListener("click", () => {
+    document.getElementById("my-profile").style.display = "flex"
+})
+
+// close profile
+
+document.getElementById("close-my-profile").addEventListener("click", ()=> {
+    document.getElementById("my-profile").style.display = "none"
+})
+
+// sign out
+
+document.getElementById("sign-out").addEventListener("click", () => {
+    const ans = confirm("Do you want to sign out?")
+    if (ans){
+        localStorage.clear()
+        window.location.reload()
+    }
+})
+
+// nickname setter
+
+document.getElementById("my-profile-nickname").addEventListener("focusout", () => {
+    const nickname = document.getElementById("my-profile-nickname")
+    settings.nickname = nickname.value.trim() == "" ? null : nickname.value
+    set(ref(db, `users/${settings.uid}/nickname`), settings.nickname)
+    localStorage.setItem("settings", JSON.stringify(settings))
+})
+
+// copy friending link
+
+document.getElementById("friending-link-copy").addEventListener("click", async () => {
+    try {
+        await navigator.clipboard.writeText(`https://krupaltisgaonkar.github.io/chat/?addFriend=${btoa(settings.uid)}`)
+        alert("copied")
+    }
+    catch {
+        alert("failed to copy")
+    }
+})
+
+// friending links
+const urlParams = new URLSearchParams(window.location.search)
+const friendingValue = urlParams.get("addFriend")
+async function sendFriendRequest(senderId, url){
+    console.log("run")
+    const ee = await get(ref(db, `users/${settings.uid}/friends`))
+    if (ee.val() !== null) {
+        const all = Object.keys(ee.val())
+        let found = false
+        all.forEach(item => {
+            if (senderId == item){
+                found =true
+            }
+        })
+        if (found){
+            alert("user is already a friend")
+            if (url == true){
+                window.location.replace(window.location.href.split("?addFriend=")[0])
+            }
+            return false
+        } else {
+            try {
+                await set(ref(db, `users/${senderId}/receivedFriendRequests/${settings.uid}`), true)
+                alert("sucessfully sent friend request")
+            } catch {
+                alert("failed to send friend request")
+            }
+            if (url == true){
+                window.location.replace(window.location.href.split("?addFriend=")[0])
+            }
+        }
+    } else {
+        try {
+            await set(ref(db, `users/${senderId}/receivedFriendRequests/${settings.uid}`), true)
+            alert("sucessfully sent friend request")
+        } catch {
+            alert("failed to send friend request")
+        }
+        window.location.replace(window.location.href.split("?addFriend=")[0])
+    }
+    
+}
+
+if (friendingValue !== null && atob(friendingValue).length == 28 && atob(friendingValue) !== settings.uid){
+    sendFriendRequest(atob(friendingValue), true)
+}
+
+document.getElementById("my-friend-requests-tab").addEventListener("click", async () => {
+    onValue(ref(db, `users/${settings.uid}/receivedFriendRequests`), async function (snapshot) {
+        const friendRequests = snapshot
+        document.getElementById("my-friend-requests").innerHTML = ""
+        if (friendRequests.val() !== null){
+            const allFriendRequests = Object.keys(friendRequests.val())
+            console.log(allFriendRequests)
+            for (var i = 0; i <allFriendRequests.length; i++){
+                console.log(allFriendRequests[i])
+                const displayName = await get(ref(db, `users/${allFriendRequests[i]}/displayName`))
+                const nickname = await get(ref(db, `users/${allFriendRequests[i]}/nickname`))
+                const imgSrc = await get(ref(db, `users/${allFriendRequests[i]}/profilePic`))
+                const img = document.createElement("img")
+                img.src = imgSrc.val()
+                img.referrerPolicy = "no-referrer"
+                const requestContainer = document.createElement("div")
+                requestContainer.classList.add("my-friend-requests-container")
+                requestContainer.id = `friend-request-${allFriendRequests[i]}`
+                const name = document.createElement("div")
+                name.classList.add("name")
+                name.textContent = nickname.val() == null ? displayName.val() : `${nickname.val()} (${displayName.val()})`
+                const accept = document.createElement("div")
+                accept.textContent = "👍"
+                accept.title = "accept"
+                accept.id = `friend-request-accept-${allFriendRequests[i]}`
+                accept.classList.add("accept")
+                // add what to do when somebody accepts the friend request
+                // chat id for friend will be [friendid]&[myid]
+                accept.addEventListener("click", () => {
+                    const longRandomCode = generateRandomCode(50)
+                    set(ref(db, `users/${settings.uid}/friends/${decline.id.split("-")[3]}`), longRandomCode)
+                    set(ref(db, `users/${decline.id.split("-")[3]}/friends/${settings.uid}`), longRandomCode)
+                    set(ref(db, `chat/${longRandomCode}/content`), "")
+                    set(ref(db, `chat/${longRandomCode}/private`), true)
+                    remove(ref(db, `users/${settings.uid}/receivedFriendRequests/${decline.id.split("-")[3]}`))
+                    alert("Accepted friend request")
+                })
+                console.log(allFriendRequests[i])
+                const decline = document.createElement("div")
+                decline.classList.add("decline")
+                decline.textContent = "👎"
+                decline.title = "decline"
+                decline.id = `friend-request-decline-${allFriendRequests[i]}`
+                decline.addEventListener("click", () => {
+                    console.log("click")
+                    console.log(`users/${settings.uid}/receivedFriendRequests/${decline.id.split("-")[3]}`)
+                    remove(ref(db, `users/${settings.uid}/receivedFriendRequests/${decline.id.split("-")[3]}`))
+                    alert("Removed friend request")
+                })
+                document.getElementById("my-friend-requests").appendChild(requestContainer)
+                requestContainer.appendChild(img)
+                requestContainer.appendChild(name)
+                requestContainer.appendChild(accept)
+                requestContainer.appendChild(decline)
+            }
+        }
+    })
+    document.getElementById("my-friend-requests-container").style.display = "block"
+})
+
+document.getElementById("friend-requests-close").addEventListener("click", () => {
+    document.getElementById("my-friend-requests-container").style.display = "none"
+})
+
+// friending
+
+onValue(ref(db, `users/${settings.uid}/friends`), async (snapshot) => {
+    const val = snapshot.val()
+    document.getElementById("my-friends").innerHTML = ""
+    if (val !== null){
+        const allFriends = Object.keys(val)
+        console.log(allFriends)
+        // can't use forEach because doesn't support async operations
+        for (let i = 0; i < allFriends.length; i++){
+            const friend = allFriends[i]
+            const friendNick = await get(ref(db, `users/${friend}/nickname`))
+            const friendDisplay = await get(ref(db, `users/${friend}/displayName`))
+            const totalString = friendNick.val() == null ? friendDisplay.val() : `${friendNick.val()} (${friendDisplay.val()})`
+            const img = await get(ref(db, `users/${friend}/profilePic`))
+            const li = document.createElement("li")
+            li.id = `friend-${friend}`
+            li.innerHTML = `<img src = "${img.val()}" referrerPolicy = "no-referrer"  cross-origin = "Anonymous">${totalString}`
+            li.addEventListener("click", async () => {
+                const getRandomCode = await get(ref(db, `users/${settings.uid}/friends/${li.id.split("-")[1]}`))
+                randomCode = getRandomCode.val()
+                await whichOne(getRandomCode.val(), false, "")
+                document.getElementById("roomNameDiv").style.display = "none"
+                document.getElementById("people").style.display = "none"
+                document.getElementById("nic").style.display = "none"
+            })
+            document.getElementById("my-friends").appendChild(li)
+        }
+    } else {
+        return false
+    }
+})
+
 
 
 // sending notifications
